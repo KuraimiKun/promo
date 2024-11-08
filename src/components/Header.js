@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { AppBar, Toolbar, Typography, IconButton, Menu, MenuItem, Box, Button, useTheme, useMediaQuery } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -18,7 +19,12 @@ const StyledButton = styled(Button)(({ theme }) => ({
   '&:hover': {
     background: 'rgba(0, 0, 0, 0.05)',
   },
+  fontFamily: 'inherit',
 }));
+
+const StyledLink = styled(Link)({
+  textDecoration: 'none',
+});
 
 const MobileDrawer = styled(motion.div)(({ theme }) => ({
   position: 'fixed',
@@ -31,105 +37,147 @@ const MobileDrawer = styled(motion.div)(({ theme }) => ({
   padding: theme.spacing(2),
 }));
 
+const StyledToolbar = styled(Toolbar)({
+  display: 'flex',
+  justifyContent: 'space-between',
+  '& .MuiBox-root': {
+    marginLeft: 0,
+  },
+});
+
 function Header() {
   const theme = useTheme();
+  const navigate = useNavigate();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [activeMenu, setActiveMenu] = useState(null);
 
   const menuItems = [
-    { title: 'Home', path: '/' },
-    { title: 'Products', path: '/products', submenu: ['New Arrivals', 'Featured', 'Sale'] },
-    { title: 'About', path: '/about' },
-    { title: 'Contact', path: '/contact' },
+    { title: 'المدونة', path: '/blog' },  
+    { title: 'عن تأثير', path: '/about' },
+    { title: 'بلس', path: '/plus', submenu: [
+      { title: 'New Arrivals', path: '/plus/new' },
+      { title: 'Featured', path: '/plus/featured' },
+      { title: 'Sale', path: '/plus/sale' }
+    ]},
+    { title: 'الخدمات الرئيسية', path: '/services', submenu: [
+      { title: 'New Arrivals', path: '/services/new' },
+      { title: 'Featured', path: '/services/featured' },
+      { title: 'Sale', path: '/services/sale' }
+    ]},
   ];
 
-  const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
-  const handleMenuClose = () => setAnchorEl(null);
+  const handleNavigate = (path) => {
+    navigate(path);
+    handleMenuClose();
+    setMobileOpen(false);
+  };
+
+  const handleMenuOpen = (event, menuId) => {
+    setAnchorEl(event.currentTarget);
+    setActiveMenu(menuId);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setActiveMenu(null);
+  };
+
   const toggleMobileMenu = () => setMobileOpen(!mobileOpen);
 
   return (
     <StyledAppBar position="sticky">
-      <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: '#333' }}>
-          LOGO
-        </Typography>
+      <StyledToolbar>
+        <StyledLink to="/">
+          <Typography variant="h6" component="div" sx={{ color: '#333' }}>
+            LOGO
+          </Typography>
+        </StyledLink>
 
-        {isMobile ? (
-          <>
-            <IconButton onClick={toggleMobileMenu} sx={{ color: '#333' }}>
-              <MenuIcon />
-            </IconButton>
-            <AnimatePresence>
-              {mobileOpen && (
-                <MobileDrawer
-                  initial={{ x: '-100%' }}
-                  animate={{ x: 0 }}
-                  exit={{ x: '-100%' }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                >
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    {menuItems.map((item) => (
-                      <motion.div
-                        key={item.title}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          {!isMobile && (
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              {menuItems.map((item) => (
+                <Box key={item.title}>
+                  {item.submenu ? (
+                    <>
+                      <StyledButton
+                        endIcon={<KeyboardArrowDownIcon />}
+                        onClick={(e) => handleMenuOpen(e, item.title)}
                       >
-                        <Typography variant="h6" sx={{ color: '#333', cursor: 'pointer' }}>
-                          {item.title}
-                        </Typography>
-                      </motion.div>
-                    ))}
-                  </Box>
-                </MobileDrawer>
-              )}
-            </AnimatePresence>
-          </>
-        ) : (
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            {menuItems.map((item) => (
-              <Box key={item.title}>
-                {item.submenu ? (
-                  <>
-                    <StyledButton
-                      endIcon={<KeyboardArrowDownIcon />}
-                      onClick={handleMenuOpen}
-                    >
-                      {item.title}
-                    </StyledButton>
-                    <Menu
-                      anchorEl={anchorEl}
-                      open={Boolean(anchorEl)}
-                      onClose={handleMenuClose}
-                      PaperProps={{
-                        sx: {
-                          mt: 1,
-                          boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-                          borderRadius: '8px',
-                        },
-                      }}
-                    >
-                      {item.submenu.map((subItem) => (
-                        <MenuItem 
-                          key={subItem}
-                          onClick={handleMenuClose}
-                          sx={{ minWidth: 150 }}
-                        >
-                          {subItem}
-                        </MenuItem>
-                      ))}
-                    </Menu>
-                  </>
-                ) : (
-                  <StyledButton>
-                    {item.title}
-                  </StyledButton>
-                )}
-              </Box>
-            ))}
-          </Box>
+                        {item.title}
+                      </StyledButton>
+                      <Menu
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl) && activeMenu === item.title}
+                        onClose={handleMenuClose}
+                        PaperProps={{
+                          sx: {
+                            mt: 1,
+                            boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                            borderRadius: '8px',
+                            direction: 'rtl',
+                          },
+                        }}
+                      >
+                        {item.submenu.map((subItem) => (
+                          <MenuItem 
+                            key={subItem.title}
+                            onClick={() => handleNavigate(subItem.path)}
+                            sx={{ minWidth: 150, textAlign: 'right' }}
+                          >
+                            {subItem.title}
+                          </MenuItem>
+                        ))}
+                      </Menu>
+                    </>
+                  ) : (
+                    <StyledLink to={item.path}>
+                      <StyledButton>
+                        {item.title}
+                      </StyledButton>
+                    </StyledLink>
+                  )}
+                </Box>
+              ))}
+            </Box>
+          )}
+        </Box>
+
+        {isMobile && (
+          <IconButton onClick={toggleMobileMenu} sx={{ color: '#333' }}>
+            <MenuIcon />
+          </IconButton>
         )}
-      </Toolbar>
+
+        <AnimatePresence>
+          {mobileOpen && (
+            <MobileDrawer
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              style={{ direction: 'rtl' }}
+            >
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                {menuItems.map((item) => (
+                  <motion.div
+                    key={item.title}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleNavigate(item.path)}
+                  >
+                    <Typography variant="h6" sx={{ color: '#333', cursor: 'pointer' }}>
+                      {item.title}
+                    </Typography>
+                  </motion.div>
+                ))}
+              </Box>
+            </MobileDrawer>
+          )}
+        </AnimatePresence>
+      </StyledToolbar>
     </StyledAppBar>
   );
 }
