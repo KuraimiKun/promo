@@ -40,7 +40,6 @@ const ContactForm = () => {
         if (!formData.email.trim()) newErrors.email = 'البريد الإلكتروني مطلوب';
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = 'البريد الإلكتروني غير صالح';
         if (!formData.phone.trim()) newErrors.phone = 'رقم الهاتف مطلوب';
-        if (!formData.gender) newErrors.gender = 'الجنس مطلوب';
         if (!formData.subject.trim()) newErrors.subject = 'الموضوع مطلوب';
         if (!formData.request.trim()) newErrors.request = 'الطلب مطلوب';
         if (!formData.contactMethod.phone && !formData.contactMethod.email) {

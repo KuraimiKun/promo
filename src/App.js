@@ -9,6 +9,8 @@ import MainSection from './Main';
 import Blog from './Blog';
 import ContactForm from './Contact';
 import SingleBlog from './SingleBlog';
+import AdminDashboard from './AdminDashboard';
+import AdminLogin from './adminLogin';
 
 function App() {
   return (
@@ -23,6 +25,9 @@ function App() {
           <Route path="/blog" element={ <Blog/> } />
           <Route path="/contact" element={ <ContactForm/>} />
           <Route path="/blog/:id" element={<SingleBlog />} />
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/admin-login" element={<AdminLogin />} />
+
           <Route path="/plus" element={<div>Plus Page</div>} />
           <Route path="/plus/new" element={<div>New Arrivals</div>} />
           <Route path="/plus/featured" element={<div>Featured</div>} />

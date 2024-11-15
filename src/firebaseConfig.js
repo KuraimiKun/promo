@@ -1,22 +1,39 @@
 // src/firebaseConfig.js
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { getStorage } from "firebase/storage";
 
 // Your Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyApyqegoBlqwqpOV1KgQ89VykIQSLBFXZA",
-    authDomain: "promo-e4d1b.firebaseapp.com",
-    projectId: "promo-e4d1b",
-    storageBucket: "promo-e4d1b.firebasestorage.app",
-    messagingSenderId: "272872875776",
-    appId: "1:272872875776:web:625f3c911003d8d3d4f5e5",
-    measurementId: "G-99ZZXRK5ZJ"
+    apiKey: "AIzaSyCdiIIFIBEz24Z1uynpClJ4OWD9RhjCtWw",
+    authDomain: "demopro-24e5b.firebaseapp.com",
+    projectId: "demopro-24e5b",
+    storageBucket: "demopro-24e5b.appspot.com",
+    messagingSenderId: "87655254134",
+    appId: "1:87655254134:web:80a4f0f6715701a8e43757",
+    measurementId: "G-JDTCDECEMJ"
   };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Initialize Firebase with error handling
+let app;
+let db;
+let auth;
+let storage;
 
-// Initialize Firestore
-const db = getFirestore(app);
+try {
+    app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+    auth = getAuth(app);
+    storage = getStorage(app);
+} catch (error) {
+    console.error("Error initializing Firebase:", error);
+}
 
-export { db };
+// Custom error handling wrapper for Firebase operations
+const handleFirebaseError = (error) => {
+    console.error("Firebase operation failed:", error);
+    throw new Error(error.message);
+};
+
+export { db, auth, storage, handleFirebaseError };
