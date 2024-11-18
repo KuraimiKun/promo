@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AppBar, Toolbar, Typography, IconButton, Menu, MenuItem, Box, Button, useTheme, useMediaQuery } from '@mui/material';
+import { AppBar, Toolbar, Typography, IconButton, Menu, MenuItem, Box, Button, useTheme, useMediaQuery, Paper } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -123,145 +123,147 @@ function Header() {
 
   return (
     <StyledAppBar position="sticky" scrolled={scrolled}>
-      <StyledToolbar>
-        <StyledLink to="/">
-          <Typography 
-            variant="h6" 
-            component="div" 
-            sx={{ 
-              color: '#333',
-              fontWeight: 700,
-              background: 'linear-gradient(45deg, #333, #666)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              fontSize: '1.5rem',
-            }}
-          >
-            LOGO
-          </Typography>
-        </StyledLink>
-
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          {!isMobile && (
-            <Box sx={{ 
-              display: 'flex', 
-              alignItems: 'center',
-              gap: 1,
-            }}>
-              {menuItems.map((item) => (
-                <Box key={item.title}>
-                  {item.submenu ? (
-                    <>
-                      <StyledButton
-                        endIcon={<KeyboardArrowDownIcon />}
-                        onClick={(e) => handleMenuOpen(e, item.title)}
-                        sx={{
-                          background: activeMenu === item.title ? 'rgba(0,0,0,0.05)' : 'transparent',
-                        }}
-                      >
-                        {item.title}
-                      </StyledButton>
-                      <Menu
-                        anchorEl={anchorEl}
-                        open={Boolean(anchorEl) && activeMenu === item.title}
-                        onClose={handleMenuClose}
-                        PaperProps={{
-                          sx: {
-                            mt: 2,
-                            boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
-                            borderRadius: '16px',
-                            direction: 'rtl',
-                            padding: '8px',
-                            '& .MuiMenuItem-root': {
-                              borderRadius: '8px',
-                              margin: '4px',
-                              transition: 'all 0.2s',
-                              '&:hover': {
-                                background: 'rgba(0,0,0,0.03)',
-                              },
-                            },
-                          },
-                        }}
-                      >
-                        {item.submenu.map((subItem) => (
-                          <MenuItem 
-                            key={subItem.title}
-                            onClick={() => handleNavigate(subItem.path)}
-                            sx={{ minWidth: 150, textAlign: 'right' }}
-                          >
-                            {subItem.title}
-                          </MenuItem>
-                        ))}
-                      </Menu>
-                    </>
-                  ) : (
-                    <StyledLink to={item.path}>
-                      <StyledButton>
-                        {item.title}
-                      </StyledButton>
-                    </StyledLink>
-                  )}
-                </Box>
-              ))}
-            </Box>
-          )}
-        </Box>
-
-        {isMobile && (
-          <IconButton onClick={toggleMobileMenu} sx={{ color: '#333' }}>
-            <MenuIcon />
-          </IconButton>
-        )}
-
-        <AnimatePresence>
-          {mobileOpen && (
-            <MobileDrawer
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      <Paper data-scrolled={scrolled.toString()}>
+        <StyledToolbar>
+          <StyledLink to="/">
+            <Typography 
+              variant="h6" 
+              component="div" 
+              sx={{ 
+                color: '#333',
+                fontWeight: 700,
+                background: 'linear-gradient(45deg, #333, #666)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                fontSize: '1.5rem',
+              }}
             >
-              <IconButton 
-                onClick={toggleMobileMenu} 
-                sx={{ 
-                  alignSelf: 'flex-start',
-                  mb: 4,
-                  color: '#333',
-                }}
-              >
-                <MenuIcon />
-              </IconButton>
+              LOGO
+            </Typography>
+          </StyledLink>
+
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            {!isMobile && (
               <Box sx={{ 
                 display: 'flex', 
-                flexDirection: 'column', 
-                gap: 3,
-                width: '100%',
+                alignItems: 'center',
+                gap: 1,
               }}>
                 {menuItems.map((item) => (
-                  <motion.div
-                    key={item.title}
-                    whileHover={{ scale: 1.02, x: -8 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => handleNavigate(item.path)}
-                  >
-                    <Typography 
-                      variant="h6" 
-                      sx={{ 
-                        color: '#333',
-                        cursor: 'pointer',
-                        fontWeight: 600,
-                        fontSize: '1.2rem',
-                      }}
-                    >
-                      {item.title}
-                    </Typography>
-                  </motion.div>
+                  <Box key={item.title}>
+                    {item.submenu ? (
+                      <>
+                        <StyledButton
+                          endIcon={<KeyboardArrowDownIcon />}
+                          onClick={(e) => handleMenuOpen(e, item.title)}
+                          sx={{
+                            background: activeMenu === item.title ? 'rgba(0,0,0,0.05)' : 'transparent',
+                          }}
+                        >
+                          {item.title}
+                        </StyledButton>
+                        <Menu
+                          anchorEl={anchorEl}
+                          open={Boolean(anchorEl) && activeMenu === item.title}
+                          onClose={handleMenuClose}
+                          PaperProps={{
+                            sx: {
+                              mt: 2,
+                              boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
+                              borderRadius: '16px',
+                              direction: 'rtl',
+                              padding: '8px',
+                              '& .MuiMenuItem-root': {
+                                borderRadius: '8px',
+                                margin: '4px',
+                                transition: 'all 0.2s',
+                                '&:hover': {
+                                  background: 'rgba(0,0,0,0.03)',
+                                },
+                              },
+                            },
+                          }}
+                        >
+                          {item.submenu.map((subItem) => (
+                            <MenuItem 
+                              key={subItem.title}
+                              onClick={() => handleNavigate(subItem.path)}
+                              sx={{ minWidth: 150, textAlign: 'right' }}
+                            >
+                              {subItem.title}
+                            </MenuItem>
+                          ))}
+                        </Menu>
+                      </>
+                    ) : (
+                      <StyledLink to={item.path}>
+                        <StyledButton>
+                          {item.title}
+                        </StyledButton>
+                      </StyledLink>
+                    )}
+                  </Box>
                 ))}
               </Box>
-            </MobileDrawer>
+            )}
+          </Box>
+
+          {isMobile && (
+            <IconButton onClick={toggleMobileMenu} sx={{ color: '#333' }}>
+              <MenuIcon />
+            </IconButton>
           )}
-        </AnimatePresence>
-      </StyledToolbar>
+
+          <AnimatePresence>
+            {mobileOpen && (
+              <MobileDrawer
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '100%' }}
+                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              >
+                <IconButton 
+                  onClick={toggleMobileMenu} 
+                  sx={{ 
+                    alignSelf: 'flex-start',
+                    mb: 4,
+                    color: '#333',
+                  }}
+                >
+                  <MenuIcon />
+                </IconButton>
+                <Box sx={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  gap: 3,
+                  width: '100%',
+                }}>
+                  {menuItems.map((item) => (
+                    <motion.div
+                      key={item.title}
+                      whileHover={{ scale: 1.02, x: -8 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => handleNavigate(item.path)}
+                    >
+                      <Typography 
+                        variant="h6" 
+                        sx={{ 
+                          color: '#333',
+                          cursor: 'pointer',
+                          fontWeight: 600,
+                          fontSize: '1.2rem',
+                        }}
+                      >
+                        {item.title}
+                      </Typography>
+                    </motion.div>
+                  ))}
+                </Box>
+              </MobileDrawer>
+            )}
+          </AnimatePresence>
+        </StyledToolbar>
+      </Paper>
     </StyledAppBar>
   );
 }

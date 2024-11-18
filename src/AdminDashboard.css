@@ -6,21 +6,23 @@
 }
 
 .sidebar {
-  width: 250px;
+  width: 240px;
   background: linear-gradient(180deg, #be1e2f 0%, #d13744 100%);
   padding: 1.5rem 0;
   height: 100vh;
   position: fixed;
   transition: all 0.3s ease;
   color: white;
+  right: 0;
+  border-left: 1px solid #eee;
 }
 
 .admin-dashboard.collapsed .sidebar {
-  width: 70px;
+  width: 60px;
 }
 
 .admin-dashboard.collapsed .main-content {
-  margin-left: 70px;
+  margin-right: 60px;
 }
 
 .sidebar-header {
@@ -90,7 +92,7 @@
 
 .main-content {
   flex: 1;
-  margin-left: 250px;
+  margin-right: 240px;
   padding: 2rem;
   transition: all 0.3s ease;
 }
@@ -106,6 +108,7 @@
   display: flex;
   gap: 0.5rem;
   padding: 0.5rem;
+  padding-right: 0;
 }
 
 .tab {
@@ -119,6 +122,7 @@
   align-items: center;
   gap: 0.5rem;
   transition: all 0.2s ease;
+  margin-left: 10px;
 }
 
 .tab:hover {
@@ -148,6 +152,7 @@
 
 .tab-icon {
   font-size: 1.25rem;
+  margin-left: 8px;
 }
 
 .panel-container {
@@ -226,6 +231,7 @@
   color: #6c757d;
   font-size: 0.875rem;
   margin: 0 0 0.25rem 0;
+  text-align: right;
 }
 
 .stat-value {

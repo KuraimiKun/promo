@@ -1,8 +1,7 @@
 // src/App.js
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import UpperFooter from './components/UpperFooter';
-import BottomFooter from './components/BottomFooter';
 import Header from './components/Header';
 import About from './About';  // Import the About component
 import MainSection from './Main';
@@ -12,13 +11,52 @@ import SingleBlog from './SingleBlog';
 import AdminDashboard from './AdminDashboard';
 import AdminLogin from './adminLogin';
 
+// Add this new component
+const NotFound = () => {
+  return (
+    <div style={{ 
+      textAlign: 'center', 
+      padding: '50px 20px',
+      minHeight: '50vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'column'
+    }}>
+      <h1>404</h1>
+      <h2>Page Not Found</h2>
+      <p>The page you are looking for doesn't exist or has been moved.</p>
+    </div>
+  );
+};
+
+// Create a wrapper component for the layout
+const Layout = ({ children }) => {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.includes('/admin-');
+  const is404 = ![
+    '/', '/about', '/blog', '/contact', 
+    '/plus', '/plus/new', '/plus/featured', '/plus/sale',
+    '/services/new', '/services/featured', '/services/sale'
+  ].includes(location.pathname) && 
+  !location.pathname.startsWith('/blog/') && 
+  !location.pathname.includes('/admin-');
+
+  const showHeaderFooter = !isAdminRoute && !is404;
+
+  return (
+    <div>
+      {showHeaderFooter && <Header />}
+      {children}
+      {showHeaderFooter && <UpperFooter />}
+    </div>
+  );
+};
+
 function App() {
   return (
-    <Router>
-      <div>
-        <Header />
-        
-        {/* Define routes for different pages */}
+    <Router basename="/">
+      <Layout>
         <Routes>
           <Route path="/" element={<MainSection />} />  {/* Default route for Services */}
           <Route path="/about" element={<About />} /> {/* About page route */}
@@ -35,11 +73,11 @@ function App() {
           <Route path="/services/new" element={<div>New Services</div>} />
           <Route path="/services/featured" element={<div>Featured Services</div>} />
           <Route path="/services/sale" element={<div>Services Sale</div>} />
-        </Routes>
 
-        {/* Common components displayed on all pages */}
-        <UpperFooter />
-      </div>
+          {/* Add this catch-all route at the end */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Layout>
     </Router>
   );
 }

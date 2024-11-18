@@ -3,23 +3,47 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #6366f1, #a855f7);
+  background: #ffffff;
+  direction: rtl;
 }
 
 .login-box {
   background: white;
-  padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  padding: 3rem 2rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(190, 30, 47, 0.1),
+              0 1px 8px rgba(0, 0, 0, 0.05);
   width: 100%;
-  max-width: 400px;
+  max-width: 450px;
+  text-align: center;
+  border: 1px solid rgba(190, 30, 47, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.login-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #be1e2f, #d13744);
 }
 
 .login-box h1 {
-  color: #333;
+  color: #2d3748;
   text-align: center;
   margin-bottom: 2rem;
-  font-size: 2rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.login-logo {
+  width: 390px;
+  height: 145px;
+  margin-bottom: 2rem;
+  object-fit: contain;
 }
 
 .input-group {
@@ -28,44 +52,62 @@
 
 input {
   width: 100%;
-  padding: 12px;
+  padding: 1rem;
   border: 2px solid #e2e8f0;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 1rem;
-  transition: border-color 0.3s ease;
+  transition: all 0.3s ease;
+  margin-bottom: 1rem;
+  direction: rtl;
+  background: #f8fafc;
 }
 
 input:focus {
   outline: none;
-  border-color: #6366f1;
+  border-color: #be1e2f;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(190, 30, 47, 0.1);
 }
 
 button {
   width: 100%;
-  padding: 12px;
-  background: #6366f1;
+  padding: 1rem;
+  background: #be1e2f;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
 }
 
 button:hover {
-  background: #4f46e5;
+  background: #a01828;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(190, 30, 47, 0.2);
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow: none;
 }
 
 button:disabled {
-  background: #93c5fd;
+  opacity: 0.7;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .error-message {
-  background: #fee2e2;
+  background: #fff5f5;
   color: #dc2626;
-  padding: 10px;
-  border-radius: 6px;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 0.75rem;
+  border-radius: 8px;
   text-align: center;
+  border: 1px solid #fee2e2;
+  font-size: 0.9rem;
 }

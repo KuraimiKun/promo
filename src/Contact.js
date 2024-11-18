@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { Container, TextField, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Checkbox, Button, Typography, Box, Paper, Grid, Snackbar, Alert, CircularProgress, Fade, Grow } from '@mui/material';
 import { collection, addDoc } from "firebase/firestore";
 import { db } from './firebaseConfig';
@@ -33,6 +33,17 @@ const ContactForm = () => {
         setMounted(true);
         return () => setMounted(false);
     }, []);
+
+    // Add useLayoutEffect to handle ResizeObserver cleanup
+    useLayoutEffect(() => {
+        const resizeObserverTimer = setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+        }, 100);
+
+        return () => {
+            clearTimeout(resizeObserverTimer);
+        };
+    }, [mounted]);
 
     const validateForm = () => {
         const newErrors = {};
@@ -81,7 +92,12 @@ const ContactForm = () => {
 
         setLoading(true);
         try {
-            await addDoc(collection(db, "contacts"), formData);
+            const timestamp = new Date();
+            await addDoc(collection(db, "contacts"), {
+                ...formData,
+                createdAt: timestamp,
+                status: 'unread' // Add default status
+            });
             setSnackbar({
                 open: true,
                 message: 'تم إرسال النموذج بنجاح!',
@@ -126,9 +142,13 @@ const ContactForm = () => {
             {/* Contact Form */}
             <Grow
                 in={mounted}
-                timeout={800}
+                timeout={600}
                 mountOnEnter
                 unmountOnExit
+                addEndListener={(node, done) => {
+                    node.addEventListener('transitionend', done);
+                    return () => node.removeEventListener('transitionend', done);
+                }}
             >
                 <Paper elevation={3} sx={{ p: 4, mb: 4 }}>
                     <Typography variant="h5" component="h2" gutterBottom align="right" color="primary" sx={{ mb: 3 }}>

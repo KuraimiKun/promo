@@ -1,27 +1,29 @@
 // src/index.js
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import App from './App';
 import theme from './theme';
-import { ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import createCache from '@emotion/cache';
 import { CacheProvider } from '@emotion/react';
-import { prefixer } from 'stylis';
-import rtlPlugin from 'stylis-plugin-rtl';
+import createEmotionCache from './createEmotionCache';
 
 // Create RTL cache
-const cacheRtl = createCache({
-  key: 'muirtl',
-  stylisPlugins: [prefixer, rtlPlugin],
-});
+const cacheRtl = createEmotionCache();
 
-ReactDOM.render(
-  <CacheProvider value={cacheRtl}>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <App />
-    </ThemeProvider>
-  </CacheProvider>,
-  document.getElementById('root')
+// Set HTML dir attribute
+document.dir = 'rtl';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <CacheProvider value={cacheRtl}>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <App />
+        </ThemeProvider>
+      </StyledEngineProvider>
+    </CacheProvider>
+  </React.StrictMode>
 );

@@ -92,19 +92,19 @@ const AdminDashboard = () => {
 
   const quickStats = [
     { 
-      label: 'Total Messages', 
+      label: 'مجموع الرسائل', 
       value: stats.totalMessages, 
       icon: MailOutlineIcon,
       color: '#be1e2f'
     },
     { 
-      label: 'Total Posts', 
+      label: 'مجموع المنشورات', 
       value: stats.totalPosts, 
       icon: BookIcon,
       color: '#2f7c31'
     },
     { 
-      label: 'New Today', 
+      label: 'جديد اليوم', 
       value: stats.newToday, 
       icon: TrendingUpIcon,
       color: '#1976d2'
@@ -112,7 +112,7 @@ const AdminDashboard = () => {
   ];
 
   return (
-    <div className={`admin-dashboard ${isSidebarCollapsed ? 'collapsed' : ''}`}>
+    <div className={`admin-dashboard ${isSidebarCollapsed ? 'collapsed' : ''}`} dir="rtl">
       <aside className="sidebar">
         <div className="sidebar-header">
           <motion.button
@@ -123,7 +123,7 @@ const AdminDashboard = () => {
           >
             <MenuIcon />
           </motion.button>
-          {!isSidebarCollapsed && <h2>Admin Panel</h2>}
+          {!isSidebarCollapsed && <h2>لوحة التحكم</h2>}
         </div>
 
         <div className="user-section">
@@ -134,7 +134,7 @@ const AdminDashboard = () => {
             onClick={handleLogout}
             className="logout-btn"
           >
-            <LogoutIcon /> {!isSidebarCollapsed && 'Logout'}
+            <LogoutIcon /> {!isSidebarCollapsed && 'تسجيل الخروج'}
           </motion.button>
         </div>
       </aside>
@@ -168,8 +168,8 @@ const AdminDashboard = () => {
           <div className="tabs-container">
             <div className="tabs">
               {[
-                { label: 'Messages', icon: ChatIcon },
-                { label: 'Blogs', icon: ArticleIcon }
+                { label: 'الرسائل', icon: ChatIcon },
+                { label: 'المدونات', icon: ArticleIcon }
               ].map((tab, index) => (
                 <motion.div
                   key={tab.label}
