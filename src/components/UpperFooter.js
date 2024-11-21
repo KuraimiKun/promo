@@ -1,12 +1,50 @@
-import React, { useEffect, useRef } from 'react';
-import { Box, Typography, Grid, IconButton, Container, Divider, TextField, Button, useTheme } from '@mui/material';
+import React, { useEffect, useRef, useState } from 'react';
+import { Box, Typography, Grid, IconButton, Container, Divider, TextField, Button, useTheme, Alert, Snackbar } from '@mui/material';
 import { Facebook, Twitter, Instagram, LinkedIn, YouTube, Phone, Email, LocationOn, Send } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 import theme from '../theme';
+import { db } from '../firebaseConfig';
+import { collection, addDoc } from 'firebase/firestore';
+import { Link, useNavigate } from 'react-router-dom';
 
 const MainFooter = () => {
   const particlesRef = useRef(null);
   const theme = useTheme();
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [notification, setNotification] = useState({ open: false, message: '', type: 'success' });
+  const navigate = useNavigate();
+
+  const handleNewsletterSubmit = async (e) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setLoading(true);
+    try {
+      await addDoc(collection(db, 'newsletter'), {
+        email,
+        createdAt: new Date().toISOString(),
+      });
+      
+      setNotification({
+        open: true,
+        message: 'تم الاشتراك بنجاح!',
+        type: 'success'
+      });
+      setEmail('');
+    } catch (error) {
+      setNotification({
+        open: true,
+        message: 'حدث خطأ، يرجى المحاولة مرة أخرى',
+        type: 'error'
+      });
+    }
+    setLoading(false);
+  };
+
+  const handleCloseNotification = () => {
+    setNotification({ ...notification, open: false });
+  };
 
   // Particle animation effect
   useEffect(() => {
@@ -102,18 +140,27 @@ const MainFooter = () => {
   );
 
   const socialIcons = [
-    { icon: <Facebook />, link: '#', color: '#1877f2' },
-    { icon: <Twitter />, link: '#', color: '#1da1f2' },
-    { icon: <Instagram />, link: '#', color: '#e4405f' },
-    { icon: <LinkedIn />, link: '#', color: '#0077b5' },
-    { icon: <YouTube />, link: '#', color: '#ff0000' },
+    { icon: <Facebook />, link: 'https://www.facebook.com/prod.promomedia?mibextid=ZbWKwL', color: '#1877f2' },
+    { icon: <Twitter />, link: 'https://x.com/prod_promomedia?t=gfdPOnroWKVI9xgK7gGRTA&s=09', color: '#1da1f2' },
+    { icon: <Instagram />, link: 'https://www.instagram.com/promomedia__/profilecard/?igsh=MXZnb2FsaW05dXY3cA==', color: '#e4405f' },
   ];
 
   const contactInfo = [
-    { icon: <Phone sx={{ ml: 1 }} />, text: '966-XX-XXXXXXX' },
-    { icon: <Email sx={{ ml: 1 }} />, text: 'info@tatheer.com' },
-    { icon: <LocationOn sx={{ ml: 1 }} />, text: 'الرياض، المملكة العربية السعودية' },
+    { text: '905011000777+', icon: <Phone sx={{ ml: 1, transform: 'scaleX(-1)' }} /> },  // Increased margin-right to 4
+    { icon: <Email sx={{ ml: 1 }} />, text: 'prod.promomedia@gmail.com' },  // Changed ml to mr and increased to 4
+    { icon: <LocationOn sx={{ ml: 1 }} />, text: 'إسطنبول, تركيا' },  // Changed ml to mr and increased to 4
   ];
+
+  const mainServices = [
+    { name: 'البرامج التلفزيونية', index: 0 },
+    { name: 'الإعلانات التجارية', index: 1 },
+    { name: 'الأفلام التعريفية', index: 2 },
+    { name: 'المؤتمرات والمناسبات', index: 3 }
+  ];
+
+  const handleServiceClick = (index) => {
+    navigate('/', { state: { scrollToService: index } });
+  };
 
   return (
     <Box
@@ -161,35 +208,83 @@ const MainFooter = () => {
                 </Typography>
               </Grid>
               <Grid item xs={12} md={6}>
-                <Box sx={{ display: 'flex', gap: 1 }}>
+                <Box 
+                  component="form" 
+                  onSubmit={handleNewsletterSubmit}
+                  sx={{ display: 'flex', gap: 1 }}
+                >
                   <TextField
                     variant="outlined"
                     placeholder="بريدك الإلكتروني"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     fullWidth
+                    disabled={loading}
+                    autoComplete="email"
+                    inputProps={{
+                      style: {
+                        textAlign: 'right',
+                        direction: 'rtl',
+                        padding: '12px 14px'
+                      }
+                    }}
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         background: 'rgba(255,255,255,0.1)',
                         borderRadius: '8px',
                         color: 'white',
+                      },
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'rgba(255,255,255,0.2)'
+                      },
+                      '&:hover .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'rgba(255,255,255,0.4)'
+                      },
+                      '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'white'
                       }
                     }}
                   />
                   <Button
+                    type="submit"
                     variant="contained"
+                    disabled={loading}
                     sx={{
                       background: 'linear-gradient(90deg, #4ecdc4, #45b649)',
                       borderRadius: '8px',
                       minWidth: '120px',
+                      opacity: loading ? 0.7 : 1,
+                      '& .MuiButton-endIcon': {
+                        marginRight: '8px',  // Add margin between text and icon
+                        marginLeft: 0,       // Reset default left margin
+                      }
                     }}
-                    endIcon={<Send />}
+                    endIcon={<Send sx={{ transform: 'scaleX(-1)' }} />}
                   >
-                    اشتراك
+                    {loading ? 'جاري...' : 'اشتراك'}
                   </Button>
                 </Box>
               </Grid>
             </Grid>
           </FloatingCard>
         </Box>
+
+        {/* Add Notification Snackbar */}
+        <Snackbar
+          open={notification.open}
+          autoHideDuration={6000}
+          onClose={handleCloseNotification}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+          <Alert 
+            onClose={handleCloseNotification} 
+            severity={notification.type}
+            sx={{ width: '100%' }}
+          >
+            {notification.message}
+          </Alert>
+        </Snackbar>
 
         {/* Main Content */}
         <Grid container spacing={4} justifyContent="space-between">
@@ -198,31 +293,27 @@ const MainFooter = () => {
             <FloatingCard>
               <Box
                 sx={{
-                  background: 'linear-gradient(135deg, #7e3ff2 0%, #4a1b9d 100%)',
                   width: 80,
                   height: 80,
-                  borderRadius: '50%',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '2.5rem',
-                  fontWeight: 'bold',
-                  margin: '0 auto 24px',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+                  margin: '0 auto 10px', // Changed from 24px to 32px
                   position: 'relative',
-                  '&::after': {
-                    content: '""',
-                    position: 'absolute',
-                    inset: -3,
-                    borderRadius: '50%',
-                    border: '2px solid rgba(255,255,255,0.1)',
-                  },
                 }}
               >
-                ت
+                <img
+                  src="/logo512White.png"
+                  alt="Promo Logo"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain'
+                  }}
+                />
               </Box>
               <Typography variant="h3" sx={{ fontWeight: 800, mb: 1, letterSpacing: 1.5 }}>
-                تأثير
+                برومو
               </Typography>
               <Typography variant="h6" sx={{ opacity: 0.9, mb: 3 }}>
                 للإنتاج الإعلامي المتميز
@@ -262,8 +353,14 @@ const MainFooter = () => {
                   }}>
                     الخدمات الرئيسية
                   </Typography>
-                  {['الفعاليات والمؤتمرات', 'الإنتاج التلفزيوني', 'الإنتاج الوثائقي', 'الإنتاج الرقمي'].map((item, index) => (
-                    <Typography key={index} sx={menuItemStyle}>{item}</Typography>
+                  {mainServices.map((service, index) => (
+                    <Typography 
+                      key={index} 
+                      sx={menuItemStyle}
+                      onClick={() => handleServiceClick(service.index)}
+                    >
+                      {service.name}
+                    </Typography>
                   ))}
                 </FloatingCard>
               </Grid>
@@ -279,14 +376,44 @@ const MainFooter = () => {
                       right: 0,
                       width: 40,
                       height: 3,
-                      background: '#ffffff',
+                      background: 'linear-gradient(90deg, #4ecdc4, #45b649)',  // Changed to match gradient
                     }
                   }}>
-                    عن تأثير
+                    عن برومو
                   </Typography>
-                  {['عندما بدأنا', 'تواصل معنا', 'المدونة'].map((item, index) => (
-                    <Typography key={index} sx={menuItemStyle}>{item}</Typography>
-                  ))}
+                  <Typography 
+                    component={Link} 
+                    to="/about" 
+                    sx={{
+                      ...menuItemStyle,
+                      textDecoration: 'none',
+                      color: 'inherit'
+                    }}
+                  >
+                    عندما بدأنا
+                  </Typography>
+                  <Typography 
+                    component={Link} 
+                    to="/contact" 
+                    sx={{
+                      ...menuItemStyle,
+                      textDecoration: 'none',
+                      color: 'inherit'
+                    }}
+                  >
+                    تواصل معنا
+                  </Typography>
+                  <Typography 
+                    component={Link} 
+                    to="/blog" 
+                    sx={{
+                      ...menuItemStyle,
+                      textDecoration: 'none',
+                      color: 'inherit'
+                    }}
+                  >
+                    المدونـة
+                  </Typography>
                 </FloatingCard>
               </Grid>
 
@@ -347,6 +474,24 @@ const MainFooter = () => {
             ))}
           </Box>
         </motion.div>
+
+        {/* Copyright Section */}
+        <Box sx={{ mt: 4, textAlign: 'center' }}>
+          <Divider sx={{ mb: 2, borderColor: 'rgba(255,255,255,0.1)' }} />
+          <Typography
+            variant="body2"
+            sx={{
+              opacity: 0.7,
+              fontSize: '0.9rem',
+              '& span': {
+                color: theme.palette.secondary.main,
+                fontWeight: 'bold'
+              }
+            }}
+          >
+            © {new Date().getFullYear()} <span>برومو</span>. جميع الحقوق محفوظة
+          </Typography>
+        </Box>
       </Container>
 
       {/* Floating Orbs */}

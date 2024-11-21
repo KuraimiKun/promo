@@ -23,6 +23,7 @@ const contentStyles = {
   flex: '1',
   padding: 3,
   textAlign: 'right',
+  position: 'relative', // This is important to position the button inside this area
 };
 
 const BlogPostSkeleton = () => (
@@ -99,15 +100,19 @@ const Blog = () => {
                   <Typography variant="body1" color="text.secondary" paragraph>
                     {post.description}
                   </Typography>
-                  <Link
-                    component={RouterLink}
-                    to={`/blog/${post.id}`}
-                    color="primary"
-                    underline="hover"
-                    sx={{ fontWeight: 'bold' }}
-                  >
-                    قراءة المزيد &raquo;
-                  </Link>
+                  
+                  {/* "Read More" Button */}
+                  <Box sx={{ position: 'absolute', bottom: 30 , left: 30 }}>
+                    <Link
+                      component={RouterLink}
+                      to={`/blog/${post.id}`}
+                      color="primary"
+                      underline="hover"
+                      sx={{ fontWeight: 'bold' }}
+                    >
+                      قراءة المزيد &raquo;
+                    </Link>
+                  </Box>
                 </CardContent>
               </Card>
             ))}

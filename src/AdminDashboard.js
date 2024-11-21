@@ -15,6 +15,8 @@ import './AdminDashboard.css';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import BookIcon from '@mui/icons-material/Book';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import MailIcon from '@mui/icons-material/Mail';
+import NewsletterPanel from './components/admin/NewsletterPanel';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -111,6 +113,12 @@ const AdminDashboard = () => {
     },
   ];
 
+  const menuItems = [
+    { label: 'الرسائل', icon: ChatIcon },
+    { label: 'المدونات', icon: ArticleIcon },
+    { label: 'النشرة البريدية', icon: MailIcon }
+  ];
+
   return (
     <div className={`admin-dashboard ${isSidebarCollapsed ? 'collapsed' : ''}`} dir="rtl">
       <aside className="sidebar">
@@ -167,10 +175,7 @@ const AdminDashboard = () => {
 
           <div className="tabs-container">
             <div className="tabs">
-              {[
-                { label: 'الرسائل', icon: ChatIcon },
-                { label: 'المدونات', icon: ArticleIcon }
-              ].map((tab, index) => (
+              {menuItems.map((tab, index) => (
                 <motion.div
                   key={tab.label}
                   className={`tab ${currentTab === index ? 'active' : ''}`}
@@ -196,6 +201,7 @@ const AdminDashboard = () => {
             >
               {currentTab === 0 && <MessagesPanel />}
               {currentTab === 1 && <BlogsPanel />}
+              {currentTab === 2 && <NewsletterPanel />}
             </motion.div>
           </AnimatePresence>
         </div>

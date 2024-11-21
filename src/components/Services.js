@@ -1,6 +1,12 @@
-import { Box, Card, Typography } from "@mui/material"; // Remove Grid import
-import { styled } from "@mui/system";
-import { useRef, useEffect } from "react"; // Add useEffect import
+import { Box, Card, Typography } from "@mui/material";
+import { styled, keyframes } from "@mui/system";
+import { useRef, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+// Add Swiper imports
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, EffectFade } from 'swiper/modules'; // Add EffectFade
+import 'swiper/css';
+import 'swiper/css/effect-fade'; // Add this import
 import MovieIcon from '@mui/icons-material/Movie';
 import TvIcon from '@mui/icons-material/Tv';
 import CampaignIcon from '@mui/icons-material/Campaign';
@@ -13,18 +19,53 @@ import ShareIcon from '@mui/icons-material/Share';
 import WebIcon from '@mui/icons-material/Web';
 import CampaignOutlinedIcon from '@mui/icons-material/CampaignOutlined';
 import SearchIcon from '@mui/icons-material/Search';
+import { Grid, Avatar } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import VideocamIcon from '@mui/icons-material/Videocam';
+import SpeakerIcon from '@mui/icons-material/Speaker';
+import TranslateIcon from '@mui/icons-material/Translate';
+import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
+import { motion } from 'framer-motion';
+
+// Add these new animations
+const shimmer = keyframes`
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+`;
+
+const float = keyframes`
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+`;
+
+const glowingEffect = keyframes`
+  0% { box-shadow: 0 0 5px rgba(98, 0, 238, 0.2), 0 0 10px rgba(98, 0, 238, 0.2), 0 0 15px rgba(98, 0, 238, 0.2); }
+  50% { box-shadow: 0 0 10px rgba(98, 0, 238, 0.5), 0 0 20px rgba(98, 0, 238, 0.3), 0 0 25px rgba(98, 0, 238, 0.2); }
+  100% { box-shadow: 0 0 5px rgba(98, 0, 238, 0.2), 0 0 10px rgba(98, 0, 238, 0.2), 0 0 15px rgba(98, 0, 238, 0.2); }
+`;
+
+const borderAnimation = keyframes`
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+`;
 
 // Custom styles
 const IconWrapper = styled(Box)(({ theme }) => ({
   background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
   color: "#fff",
   borderRadius: "50%",
-  width: 70,
-  height: 70,
+  width: 50, // Reduced from 60
+  height: 50, // Reduced from 60
   display: "flex",
   alignItems: "center",
-  justifyContent: "center",
-  fontSize: "30px",
+  justifyContent: "center", 
+  fontSize: "22px", // Reduced from 26px
   margin: "0 auto",
   boxShadow: "0 8px 20px rgba(98, 0, 238, 0.2)",
   transition: "transform 0.3s ease",
@@ -33,43 +74,19 @@ const IconWrapper = styled(Box)(({ theme }) => ({
   }
 }));
 
-// Update SliderContainer styling
-const SliderContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  overflow: 'hidden', // Hide overflow
-  position: 'relative',
-  padding: theme.spacing(2),
-  marginBottom: theme.spacing(4),
-}));
-
-const SlideTrack = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  gap: theme.spacing(3),
-  animation: 'slide 40s linear infinite',
-  '@keyframes slide': {
-    '0%': {
-      transform: 'translateX(100%)',
-    },
-    '100%': {
-      transform: 'translateX(-100%)',
-    },
-  },
-  '&:hover': {
-    animationPlayState: 'paused',
-  },
-}));
-
-// Update ServiceCard width
+// Update ServiceCard to work better with Swiper
 const ServiceCard = styled(Card)(({ theme }) => ({
-  padding: theme.spacing(4),
+  padding: theme.spacing(1.5), // Reduced padding
   textAlign: "center",
   boxShadow: `0 8px 24px ${theme.palette.primary.main}33`,
-  borderRadius: "20px",
+  borderRadius: "12px", // Reduced from 16px
   transition: "all 0.3s ease",
-  width: 280, // Change maxWidth to width
-  flex: '0 0 auto', // Prevent card from stretching
-  margin: "auto",
+  height: 240, // Reduced from 280
+  width: 180, // Reduced from 200
+  margin: "0 auto", // Changed from "10px auto" to "0 auto"
   cursor: "pointer",
+  display: "flex",
+  flexDirection: "column",
   "&:hover": {
     transform: "translateY(-10px)",
     boxShadow: `0 12px 32px ${theme.palette.primary.main}33`
@@ -80,10 +97,35 @@ function ServiceCardContent({ icon, title, description, onClick }) {
   return (
     <ServiceCard onClick={onClick}>
       <IconWrapper>{icon}</IconWrapper>
-      <Typography variant="h6" color="primary" sx={{ fontWeight: "bold", mt: 3 }}>
+      <Typography 
+        variant="h6" 
+        color="primary" 
+        sx={{ 
+          fontWeight: "bold", 
+          mt: 3,
+          mb: 1, // Add margin bottom
+          minHeight: '52px', // Change from fixed height to minHeight
+          overflow: 'hidden',
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+        }}
+      >
         {title}
       </Typography>
-      <Typography variant="body2" color="textSecondary" sx={{ mt: 1, fontSize: "0.95rem", lineHeight: "1.6" }}>
+      <Typography 
+        variant="body2" 
+        color="textSecondary" 
+        sx={{ 
+          fontSize: "0.95rem", 
+          lineHeight: "1.6",
+          flex: 1, // Take remaining space
+          overflow: 'hidden',
+          display: '-webkit-box',
+          WebkitLineClamp: 4, // Increase from 3 to 4 lines
+          WebkitBoxOrient: 'vertical',
+        }}
+      >
         {description}
       </Typography>
     </ServiceCard>
@@ -91,7 +133,21 @@ function ServiceCardContent({ icon, title, description, onClick }) {
 }
 
 function ServicesSection() {
+  const location = useLocation();
   const sectionsRef = useRef([]);
+
+  // Add this effect to handle scrolling from footer
+  useEffect(() => {
+    if (location.state?.scrollToService !== undefined) {
+      const index = location.state.scrollToService;
+      if (sectionsRef.current[index]) {
+        sectionsRef.current[index].scrollIntoView({ behavior: "smooth" });
+        // Clear the state after scrolling
+        window.history.replaceState({}, document.title);
+      }
+    }
+  }, [location]);
+
   const services = [
     {
       icon: <TvIcon fontSize="large" />,
@@ -165,6 +221,60 @@ function ServicesSection() {
     sectionsRef.current[index].scrollIntoView({ behavior: "smooth" });
   };
 
+  const vipServices = [ 
+    { 
+      title: 'تأجير معدات تصوير',
+      description: 'نوفر أحدث معدات التصوير الاحترافية بما في ذلك الكاميرات، العدسات، والملحقات لتلبية احتياجات مشاريعك الإعلامية بأعلى جودة.',
+      imagePath: '/images/camera-rental.jpg',
+      icon: <VideocamIcon fontSize="large" />
+    },
+    { 
+      title: 'تأجير شاشات LED',
+      description: 'شاشات LED عالية الدقة بمختلف الأحجام والمواصفات، مثالية للمؤتمرات والفعاليات والعروض الخارجية والداخلية.',
+      imagePath: '/images/led-screens.jpg',
+      icon: <TvIcon fontSize="large" />
+    },
+    { 
+      title: 'تأجير نظام إضاءة + نظام صوت',
+      description: 'أنظمة إضاءة وصوت متكاملة عالية الجودة لتغطية جميع أنواع الفعاليات والمناسبات مع دعم فني متخصص.',
+      imagePath: '/images/sound-light.jpg',
+      icon: <SpeakerIcon fontSize="large" />
+    },
+    { 
+      title: 'الترجمة الفورية',
+      description: 'خدمات ترجمة فورية احترافية مع مترجمين متخصصين وأحدث أنظمة الترجمة للمؤتمرات والفعاليات متعددة اللغات.',
+      imagePath: '/images/translation.jpg',
+      icon: <TranslateIcon fontSize="large" />
+    },
+    { 
+      title: 'مطبوعات وهدايا',
+      description: 'تصميم وإنتاج مطبوعات وهدايا دعائية مبتكرة تعزز هوية علامتك التجارية وتترك انطباعاً دائماً.',
+      imagePath: '/images/prints-gifts.jpg',
+      icon: <CardGiftcardIcon fontSize="large" />
+    },
+  ];
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.5
+      }
+    }
+  };
+
   return (
     <Box sx={{ padding: { xs: "30px 0", md: "50px 20px" }, direction: "rtl" }}>
       <Typography variant="h4" color="primary" sx={{ 
@@ -176,21 +286,48 @@ function ServicesSection() {
         خدماتنا الرئيسية
       </Typography>
 
-      {/* Updated slider container */}
-      <SliderContainer>
-        <SlideTrack>
-          {/* Double the items for seamless loop */}
-          {[...services, ...services].map((service, index) => (
-            <ServiceCardContent
-              key={index}
-              icon={service.icon}
-              title={service.title}
-              description={service.description}
-              onClick={() => handleCardClick(index % services.length)}
-            />
+      {/* Replace slider implementation with Swiper */}
+      <Box sx={{ mb: 8 }}>
+        <Swiper
+          modules={[Autoplay, EffectFade]}
+          spaceBetween={2} // Reduced from 5
+          slidesPerView={2}
+          centeredSlides={false}
+          autoplay={{
+            delay: 100, // Increased from 2000
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true,
+            waitForTransition: true // Add this
+          }}
+          speed={1500} // Increased from 1000
+          loop={true}
+          breakpoints={{
+            480: { slidesPerView: 2, spaceBetween: 2 }, // Reduced from 10
+            768: { slidesPerView: 4, spaceBetween: 2 }, // Increased slidesPerView
+            1024: { slidesPerView: 5, spaceBetween: 2 }, // Increased slidesPerView
+            1280: { slidesPerView: 6, spaceBetween: 2 }, // Increased slidesPerView
+          }}
+          style={{ padding: '0' }} // Removed padding
+          css={{
+            '.swiper-slide': {
+              transition: 'all 0.4s ease-out'
+            }
+          }}
+        >
+          {services.map((service, index) => (
+            <SwiperSlide key={index}>
+              <ServiceCardContent
+                icon={service.icon}
+                title={service.title}
+                description={service.description}
+                onClick={() => handleCardClick(index)}
+              />
+            </SwiperSlide>
           ))}
-        </SlideTrack>
-      </SliderContainer>
+        </Swiper>
+      </Box>
+
+   
 
       {/* Detailed Sections */}
       <Box sx={{ 
@@ -291,7 +428,345 @@ function ServicesSection() {
           </Box>
         ))}
       </Box>
+
+         {/* Add VIP Services section here, right after the Swiper */}
+         <Box
+        component={motion.div}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={containerVariants}
+        sx={{
+          position: 'relative',
+          padding: { xs: 3, md: 8 },
+          background: `linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)`,
+          backdropFilter: 'blur(10px)',
+          borderRadius: 4,
+          overflow: 'hidden',
+          mb: 8,
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            inset: 0,
+            background: `linear-gradient(45deg, ${theme => theme.palette.primary.main}15, ${theme => theme.palette.secondary.main}15)`,
+            zIndex: -1,
+          },
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            inset: 0,
+            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
+            backgroundSize: '1000px 100%',
+            animation: `${shimmer} 5s infinite linear`,
+            zIndex: -1,
+          }
+        }}
+      >
+        <Grid container spacing={4} alignItems="center">
+          {/* Title Section */}
+          <Grid item xs={12} md={4}>
+            <Box
+              sx={{
+                position: 'relative',
+                textAlign: 'center',
+                p: 3,
+                background: 'rgba(255,255,255,0.1)',
+                borderRadius: 2,
+                backdropFilter: 'blur(5px)',
+                border: '1px solid rgba(255,255,255,0.2)',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                overflow: 'hidden',
+                '&::after': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: '3px',
+                  background: theme => `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                }
+              }}
+            >
+              <motion.div variants={itemVariants}>
+                <Typography
+                  variant="h2"
+                  sx={{
+                    fontFamily: 'Cairo, sans-serif',
+                    fontWeight: 800,
+                    background: theme => `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    mb: 2,
+                  }}
+                >
+                  برومو
+                  <Box component="span" sx={{ color: theme => theme.palette.secondary.main }}>+</Box>
+                  بلس
+                </Typography>
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    fontFamily: 'Cairo, sans-serif',
+                    fontSize: '1.1rem',
+                    color: 'text.secondary',
+                    lineHeight: 1.8,
+                  }}
+                >
+                  تقدم برومو أيضًا العديد من الخدمات الفردية المميزة في مجال الإنتاج الإعلامي
+                </Typography>
+              </motion.div>
+            </Box>
+          </Grid>
+
+          {/* Services Grid */}
+          <Grid item xs={12} md={8}>
+            <Grid 
+              container 
+              spacing={2}
+              justifyContent="center"
+            >
+              {vipServices.map((service, index) => (
+                <Grid 
+                  item 
+                  xs={12} 
+                  sm={6} 
+                  md={6}
+                  key={index}
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center'
+                  }}
+                >
+                  <motion.div 
+                    variants={itemVariants} 
+                    style={{ width: '100%' }}
+                    whileHover={{ scale: 1.02 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
+                    <Card
+                      sx={{
+                        p: 3,
+                        height: '100%',
+                        background: 'rgba(255,255,255,0.9)',
+                        backdropFilter: 'blur(10px)',
+                        borderRadius: 3,
+                        position: 'relative',
+                        overflow: 'visible',
+                        transition: 'all 0.4s ease',
+
+                        // Gradient border effect
+                        '&::before': {
+                          content: '""',
+                          position: 'absolute',
+                          inset: -2,
+                          zIndex: -1,
+                          borderRadius: '16px',
+                          background: theme => 
+                            `linear-gradient(45deg, 
+                              ${theme.palette.primary.main}, 
+                              ${theme.palette.secondary.main}, 
+                              ${theme.palette.primary.light}
+                            )`,
+                          backgroundSize: '200% 200%',
+                          animation: `${borderAnimation} 4s linear infinite`,
+                          opacity: 0,
+                          transition: 'opacity 0.3s ease',
+                        },
+
+                        // Premium shadow effect
+                        '&::after': {
+                          content: '""',
+                          position: 'absolute',
+                          inset: 0,
+                          borderRadius: '12px',
+                          background: 'transparent',
+                          animation: `${glowingEffect} 3s ease-in-out infinite`,
+                          opacity: 0,
+                          transition: 'opacity 0.3s ease',
+                        },
+
+                        // Hover effects
+                        '&:hover': {
+                          transform: 'translateY(-5px)',
+                          background: theme => 
+                            `linear-gradient(135deg, 
+                              rgba(255,255,255,0.95), 
+                              rgba(255,255,255,0.85)
+                            )`,
+                          '&::before': {
+                            opacity: 1,
+                          },
+                          '&::after': {
+                            opacity: 1,
+                          },
+                          '& .service-icon': {
+                            transform: 'rotateY(180deg)',
+                          },
+                        },
+                      }}
+                    >
+                      <motion.div
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ duration: 0.5, delay: index * 0.1 }}
+                      >
+                        <Avatar
+                          className="service-icon"
+                          sx={{
+                            width: 80,
+                            height: 80,
+                            background: theme => `linear-gradient(135deg, 
+                              ${theme.palette.primary.main}, 
+                              ${theme.palette.secondary.main}
+                            )`,
+                            boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+                            margin: '0 auto 20px auto',
+                            transition: 'transform 0.6s ease',
+                            '& svg': {
+                              fontSize: '2rem',
+                              transition: 'transform 0.3s ease',
+                            },
+                            '&:hover svg': {
+                              transform: 'scale(1.2)',
+                            },
+                          }}
+                        >
+                          {service.icon}
+                        </Avatar>
+                        <Typography 
+                          variant="h6" 
+                          sx={{ 
+                            fontFamily: 'Cairo, sans-serif',
+                            fontWeight: 700,
+                            color: 'text.primary',
+                            textAlign: 'center',
+                            position: 'relative',
+                            '&::after': {
+                              content: '""',
+                              position: 'absolute',
+                              bottom: -8,
+                              left: '50%',
+                              transform: 'translateX(-50%)',
+                              width: '40%',
+                              height: 3,
+                              background: theme => 
+                                `linear-gradient(90deg, 
+                                  ${theme.palette.primary.main}, 
+                                  ${theme.palette.secondary.main}
+                                )`,
+                              borderRadius: '2px',
+                              transition: 'width 0.3s ease',
+                            },
+                            '&:hover::after': {
+                              width: '60%',
+                            },
+                          }}
+                        >
+                          {service.title}
+                        </Typography>
+                      </motion.div>
+                    </Card>
+                  </motion.div>
+                </Grid>
+              ))}
+            </Grid>
+          </Grid>
+        </Grid>
+      </Box>
+
+      {/* Add VIP Services Detailed Sections */}
+      {vipServices.map((service, index) => (
+        <Box
+          key={index}
+          sx={{
+            width: "100%",
+            padding: { xs: "40px 0", md: "60px 0" },
+            backgroundColor: index % 2 === 0 ? "#f5f5f5" : "#fff",
+            display: "flex",
+            justifyContent: "center"
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              maxWidth: { xs: "95%", md: "1400px" },
+              width: "100%",
+              gap: { xs: 4, md: 6 },
+              flexDirection: { xs: "column", md: "row" },
+              alignItems: "center",
+              justifyContent: "center"
+            }}
+          >
+            <Box sx={{ 
+              display: "flex",
+              flexDirection: { xs: "column", md: "row" },
+              width: "100%",
+              gap: { xs: 3, md: 6 },
+              alignItems: "center",
+              justifyContent: "center"
+            }}>
+              <Box sx={{ 
+                order: { xs: 1, md: index % 2 === 0 ? 2 : 1 },
+                flex: 1,
+                padding: { xs: 2, md: 3 },
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center"
+              }}>
+                <IconWrapper sx={{ mb: 3 }}>
+                  {service.icon}
+                </IconWrapper>
+                <Typography variant="h5" color="primary" sx={{ 
+                  fontWeight: "bold",
+                  mb: { xs: 2, md: 3 },
+                  fontSize: { xs: "1.75rem", md: "2rem" },
+                  textAlign: "center",
+                  width: "100%"
+                }}>
+                  {service.title}
+                </Typography>
+                <Typography variant="body1" sx={{ 
+                  lineHeight: "1.8",
+                  fontSize: { xs: "1.1rem", md: "1.25rem" },
+                  textAlign: "center",
+                  width: "100%",
+                  maxWidth: "800px"
+                }}>
+                  {service.description}
+                </Typography>
+              </Box>
+
+              <Box sx={{
+                order: { xs: 2, md: index % 2 === 0 ? 1 : 2 },
+                flex: 1,
+                width: "100%",
+                height: { xs: "300px", md: "450px" },
+                position: "relative",
+                borderRadius: "12px",
+                overflow: "hidden",
+                boxShadow: "0 8px 20px rgba(0, 0, 0, 0.1)",
+              }}>
+                <Box
+                  component="img"
+                  src={service.imagePath}
+                  alt={service.title}
+                  sx={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    objectPosition: "center",
+                  }}
+                />
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+      ))}
     </Box>
+
+    
   );
 }
 

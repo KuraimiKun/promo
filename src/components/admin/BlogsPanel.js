@@ -11,6 +11,20 @@ import { collection, query, onSnapshot, addDoc, deleteDoc, doc, updateDoc } from
 import { db, storage } from '../../firebaseConfig';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
+const TRANSLATIONS = {
+  createPost: 'إنشاء منشور جديد',
+  editPost: 'تعديل المنشور',
+  title: 'العنوان',
+  description: 'الوصف',
+  content: 'المحتوى',
+  preview: 'معاينة',
+  uploadImage: 'رفع صورة',
+  cancel: 'إلغاء',
+  create: 'إنشاء',
+  update: 'تحديث',
+  deleteConfirm: 'هل أنت متأكد من حذف هذا المنشور؟'
+};
+
 const BlogsPanel = () => {
   const [blogs, setBlogs] = useState([]);
   const [open, setOpen] = useState(false);
@@ -84,7 +98,7 @@ const BlogsPanel = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this blog post?')) {
+    if (window.confirm(TRANSLATIONS.deleteConfirm)) {
       try {
         await deleteDoc(doc(db, "blogPosts", id));
       } catch (error) {
@@ -137,7 +151,7 @@ const BlogsPanel = () => {
           startIcon={<EditIcon />}
           sx={{ boxShadow: 2 }}
         >
-          Create New Post
+          إنشاء منشور جديد
         </Button>
       </Box>
 
@@ -150,10 +164,10 @@ const BlogsPanel = () => {
           <Table>
             <TableHead>
               <TableRow sx={{ bgcolor: 'primary.main' }}>
-                <TableCell sx={{ color: 'white' }}>Image</TableCell>
-                <TableCell sx={{ color: 'white' }}>Title</TableCell>
-                <TableCell sx={{ color: 'white' }}>Status</TableCell>
-                <TableCell sx={{ color: 'white' }}>Actions</TableCell>
+                <TableCell sx={{ color: 'white' }}>الصورة</TableCell>
+                <TableCell sx={{ color: 'white' }}>العنوان</TableCell>
+                <TableCell sx={{ color: 'white' }}>الحالة</TableCell>
+                <TableCell sx={{ color: 'white' }}>الإجراءات</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -196,26 +210,26 @@ const BlogsPanel = () => {
         PaperProps={{ sx: { height: '90vh' } }}
       >
         <DialogTitle sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          {editBlog ? 'Edit Blog Post' : 'Create New Blog Post'}
+          {editBlog ? TRANSLATIONS.editPost : TRANSLATIONS.createPost}
         </DialogTitle>
         <DialogContent sx={{ p: 0 }}>
           <Tabs value={currentTab} onChange={(e, v) => setCurrentTab(v)} sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tab label="Content" />
-            <Tab label="Preview" />
+            <Tab label={TRANSLATIONS.content} />
+            <Tab label={TRANSLATIONS.preview} />
           </Tabs>
           <Box sx={{ p: 3 }}>
             {currentTab === 0 ? (
               <>
                 <TextField
                   fullWidth
-                  label="Title"
+                  label={TRANSLATIONS.title}
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   margin="normal"
                 />
                 <TextField
                   fullWidth
-                  label="Description"
+                  label={TRANSLATIONS.description}
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   margin="normal"
@@ -234,7 +248,7 @@ const BlogsPanel = () => {
                       component="span"
                       sx={{ mr: 2 }}
                     >
-                      Upload Image
+                      {TRANSLATIONS.uploadImage}
                     </Button>
                   </label>
                   {uploadProgress > 0 && uploadProgress < 100 && (
@@ -257,7 +271,7 @@ const BlogsPanel = () => {
                 </Box>
                 <TextField
                   fullWidth
-                  label="Content"
+                  label={TRANSLATIONS.content}
                   value={formData.content}
                   onChange={handleEditorChange}
                   margin="normal"
@@ -286,9 +300,9 @@ const BlogsPanel = () => {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleClose}>{TRANSLATIONS.cancel}</Button>
           <Button onClick={handleSubmit} variant="contained">
-            {editBlog ? 'Update' : 'Create'}
+            {editBlog ? TRANSLATIONS.update : TRANSLATIONS.create}
           </Button>
         </DialogActions>
       </Dialog>

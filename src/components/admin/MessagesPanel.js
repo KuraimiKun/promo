@@ -14,6 +14,25 @@ import { collection, query, onSnapshot, orderBy, updateDoc, doc } from 'firebase
 import { db } from '../../firebaseConfig';
 import { formatDistanceToNow } from 'date-fns';
 
+const STATUS_TRANSLATIONS = {
+  unread: 'غير مقروء',
+  read: 'مقروء',
+  responded: 'تم الرد'
+};
+
+const TRANSLATIONS = {
+  messageDetails: 'تفاصيل الرسالة',
+  status: 'الحالة',
+  contactInfo: 'معلومات الاتصال',
+  message: 'الرسالة',
+  preferredContact: 'طريقة الاتصال المفضلة',
+  sendEmail: 'إرسال بريد إلكتروني',
+  call: 'اتصال',
+  copyEmail: 'نسخ البريد الإلكتروني',
+  copyPhone: 'نسخ رقم الهاتف',
+  noMessages: 'لا توجد رسائل'
+};
+
 const MessagesPanel = () => {
   const [messages, setMessages] = useState([]);
   const [selectedMessage, setSelectedMessage] = useState(null);
@@ -85,7 +104,7 @@ const MessagesPanel = () => {
       read: 'default',
       responded: 'success'
     };
-    return <Chip size="small" label={status} color={statusColors[status]} />;
+    return <Chip size="small" label={STATUS_TRANSLATIONS[status]} color={statusColors[status]} />;
   };
 
   const filteredMessages = messages
@@ -112,7 +131,7 @@ const MessagesPanel = () => {
       <Box sx={{ mb: 3, display: 'flex', gap: 2, alignItems: 'center' }}>
         <TextField
           size="small"
-          placeholder="Search messages..."
+          placeholder="بحث في الرسائل..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           sx={{ flexGrow: 1 }}
@@ -123,10 +142,10 @@ const MessagesPanel = () => {
           onChange={(e) => setFilter(e.target.value)}
           startAdornment={<FilterListIcon sx={{ mr: 1 }} />}
         >
-          <MenuItem value="all">All Messages</MenuItem>
-          <MenuItem value="unread">Unread</MenuItem>
-          <MenuItem value="read">Read</MenuItem>
-          <MenuItem value="responded">Responded</MenuItem>
+          <MenuItem value="all">كل الرسائل</MenuItem>
+          <MenuItem value="unread">غير مقروء</MenuItem>
+          <MenuItem value="read">مقروء</MenuItem>
+          <MenuItem value="responded">تم الرد</MenuItem>
         </Select>
       </Box>
 
@@ -134,12 +153,12 @@ const MessagesPanel = () => {
         <Table>
           <TableHead>
             <TableRow sx={{ bgcolor: 'primary.main' }}>
-              <TableCell sx={{ color: 'white' }}>Status</TableCell>
-              <TableCell sx={{ color: 'white' }}>Name</TableCell>
-              <TableCell sx={{ color: 'white' }}>Email</TableCell>
-              <TableCell sx={{ color: 'white' }}>Phone</TableCell>
-              <TableCell sx={{ color: 'white' }}>Subject</TableCell>
-              <TableCell sx={{ color: 'white' }}>Received</TableCell>
+              <TableCell sx={{ color: 'white' }}>الحالة</TableCell>
+              <TableCell sx={{ color: 'white' }}>الاسم</TableCell>
+              <TableCell sx={{ color: 'white' }}>البريد الإلكتروني</TableCell>
+              <TableCell sx={{ color: 'white' }}>رقم الهاتف</TableCell>
+              <TableCell sx={{ color: 'white' }}>الموضوع</TableCell>
+              <TableCell sx={{ color: 'white' }}>تاريخ الاستلام</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -180,7 +199,7 @@ const MessagesPanel = () => {
           <>
             <DialogTitle>
               <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Typography variant="h6">Message Details</Typography>
+                <Typography variant="h6">{TRANSLATIONS.messageDetails}</Typography>
                 <IconButton onClick={() => setSelectedMessage(null)}>
                   <CloseIcon />
                 </IconButton>
@@ -189,7 +208,7 @@ const MessagesPanel = () => {
             <DialogContent>
               <Stack spacing={3}>
                 <Box>
-                  <Typography variant="subtitle2" color="text.secondary">Status</Typography>
+                  <Typography variant="subtitle2" color="text.secondary">{TRANSLATIONS.status}</Typography>
                   <Select
                     fullWidth
                     size="small"
@@ -197,16 +216,16 @@ const MessagesPanel = () => {
                     onChange={(e) => handleMessageStatus(selectedMessage.id, e.target.value)}
                     sx={{ mt: 1 }}
                   >
-                    <MenuItem value="unread">Unread</MenuItem>
-                    <MenuItem value="read">Read</MenuItem>
-                    <MenuItem value="responded">Responded</MenuItem>
+                    <MenuItem value="unread">{STATUS_TRANSLATIONS.unread}</MenuItem>
+                    <MenuItem value="read">{STATUS_TRANSLATIONS.read}</MenuItem>
+                    <MenuItem value="responded">{STATUS_TRANSLATIONS.responded}</MenuItem>
                   </Select>
                 </Box>
 
                 <Divider />
 
                 <Box>
-                  <Typography variant="subtitle2" color="text.secondary">Contact Information</Typography>
+                  <Typography variant="subtitle2" color="text.secondary">{TRANSLATIONS.contactInfo}</Typography>
                   <Stack spacing={2} sx={{ mt: 1 }}>
                     <Box display="flex" alignItems="center" gap={1}>
                       <Typography variant="body1" fontWeight="500">{selectedMessage.name}</Typography>
@@ -215,7 +234,7 @@ const MessagesPanel = () => {
                     <Box display="flex" alignItems="center" gap={1}>
                       <EmailIcon color="action" />
                       <Typography variant="body1">{selectedMessage.email}</Typography>
-                      <Tooltip title="Copy Email">
+                      <Tooltip title={TRANSLATIONS.copyEmail}>
                         <IconButton size="small" onClick={() => copyToClipboard(selectedMessage.email)}>
                           <ContentCopyIcon fontSize="small" />
                         </IconButton>
@@ -225,7 +244,7 @@ const MessagesPanel = () => {
                     <Box display="flex" alignItems="center" gap={1}>
                       <PhoneIcon color="action" />
                       <Typography variant="body1">{selectedMessage.phone}</Typography>
-                      <Tooltip title="Copy Phone">
+                      <Tooltip title={TRANSLATIONS.copyPhone}>
                         <IconButton size="small" onClick={() => copyToClipboard(selectedMessage.phone)}>
                           <ContentCopyIcon fontSize="small" />
                         </IconButton>
@@ -237,7 +256,7 @@ const MessagesPanel = () => {
                 <Divider />
 
                 <Box>
-                  <Typography variant="subtitle2" color="text.secondary">Message</Typography>
+                  <Typography variant="subtitle2" color="text.secondary">{TRANSLATIONS.message}</Typography>
                   <Typography variant="body1" sx={{ mt: 1 }} fontWeight="500">
                     {selectedMessage.subject}
                   </Typography>
@@ -248,7 +267,7 @@ const MessagesPanel = () => {
 
                 <Box>
                   <Typography variant="subtitle2" color="text.secondary">
-                    Preferred Contact Method
+                    {TRANSLATIONS.preferredContact}
                   </Typography>
                   <Typography variant="body1" sx={{ mt: 1 }}>
                     {Object.entries(selectedMessage.contactMethod)
@@ -275,13 +294,13 @@ const MessagesPanel = () => {
                     startIcon={<EmailIcon />}
                     onClick={() => window.location.href = `mailto:${selectedMessage.email}`}
                   >
-                    Send Email
+                    {TRANSLATIONS.sendEmail}
                   </Button>
                   <Button
                     startIcon={<PhoneIcon />}
                     onClick={() => window.location.href = `tel:${selectedMessage.phone}`}
                   >
-                    Call
+                    {TRANSLATIONS.call}
                   </Button>
                 </ButtonGroup>
               </Stack>

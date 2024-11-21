@@ -10,6 +10,7 @@ import ContactForm from './Contact';
 import SingleBlog from './SingleBlog';
 import AdminDashboard from './AdminDashboard';
 import AdminLogin from './adminLogin';
+import { useEffect } from 'react';
 
 // Add this new component
 const NotFound = () => {
@@ -30,6 +31,17 @@ const NotFound = () => {
   );
 };
 
+// Add this component at the top level of your file
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
+
 // Create a wrapper component for the layout
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -46,16 +58,18 @@ const Layout = ({ children }) => {
 
   return (
     <div>
-      {showHeaderFooter && <Header />}
+      {/* {showHeaderFooter && <Header />} */}
       {children}
       {showHeaderFooter && <UpperFooter />}
     </div>
   );
 };
 
+// Update your App component
 function App() {
   return (
     <Router basename="/">
+      <ScrollToTop /> {/* Add this line */}
       <Layout>
         <Routes>
           <Route path="/" element={<MainSection />} />  {/* Default route for Services */}
