@@ -76,35 +76,36 @@ const IconWrapper = styled(Box)(({ theme }) => ({
 
 // Update ServiceCard to work better with Swiper
 const ServiceCard = styled(Card)(({ theme }) => ({
-  padding: theme.spacing(1.5), // Reduced padding
+  padding: theme.spacing(3),
   textAlign: "center",
-  boxShadow: `0 8px 24px ${theme.palette.primary.main}33`,
-  borderRadius: "12px", // Reduced from 16px
+  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+  borderRadius: "16px",
   transition: "all 0.3s ease",
-  height: 240, // Reduced from 280
-  width: 180, // Reduced from 200
-  margin: "0 auto", // Changed from "10px auto" to "0 auto"
+  height: '320px', // Fixed height
+  width: '100%',
   cursor: "pointer",
   display: "flex",
   flexDirection: "column",
+  background: '#fff',
+  marginBottom: theme.spacing(1), // Add bottom margin
   "&:hover": {
-    transform: "translateY(-10px)",
-    boxShadow: `0 12px 32px ${theme.palette.primary.main}33`
+    transform: "translateY(-5px)",
+    boxShadow: '0 8px 24px rgba(0,0,0,0.15)'
   }
 }));
 
 function ServiceCardContent({ icon, title, description, onClick }) {
   return (
     <ServiceCard onClick={onClick}>
-      <IconWrapper>{icon}</IconWrapper>
+      <IconWrapper sx={{ mb: 2 }}>{icon}</IconWrapper>
       <Typography 
         variant="h6" 
         color="primary" 
         sx={{ 
           fontWeight: "bold", 
-          mt: 3,
-          mb: 1, // Add margin bottom
-          minHeight: '52px', // Change from fixed height to minHeight
+          mb: 2,
+          fontSize: '1.1rem',
+          height: '44px',
           overflow: 'hidden',
           display: '-webkit-box',
           WebkitLineClamp: 2,
@@ -115,15 +116,16 @@ function ServiceCardContent({ icon, title, description, onClick }) {
       </Typography>
       <Typography 
         variant="body2" 
-        color="textSecondary" 
+        color="text.secondary" 
         sx={{ 
-          fontSize: "0.95rem", 
-          lineHeight: "1.6",
-          flex: 1, // Take remaining space
+          fontSize: "0.9rem", 
+          lineHeight: 1.6,
+          flex: 1,
           overflow: 'hidden',
           display: '-webkit-box',
-          WebkitLineClamp: 4, // Increase from 3 to 4 lines
+          WebkitLineClamp: 4,
           WebkitBoxOrient: 'vertical',
+          opacity: 0.8
         }}
       >
         {description}
@@ -135,14 +137,20 @@ function ServiceCardContent({ icon, title, description, onClick }) {
 function ServicesSection() {
   const location = useLocation();
   const sectionsRef = useRef([]);
+  const vipSectionsRef = useRef({}); // Add this for VIP services
 
-  // Add this effect to handle scrolling from footer
+  // Modify the useEffect to handle both main and VIP services
   useEffect(() => {
     if (location.state?.scrollToService !== undefined) {
       const index = location.state.scrollToService;
       if (sectionsRef.current[index]) {
         sectionsRef.current[index].scrollIntoView({ behavior: "smooth" });
-        // Clear the state after scrolling
+        window.history.replaceState({}, document.title);
+      }
+    } else if (location.state?.scrollToVipService) {
+      const serviceName = location.state.scrollToVipService;
+      if (vipSectionsRef.current[serviceName]) {
+        vipSectionsRef.current[serviceName].scrollIntoView({ behavior: "smooth" });
         window.history.replaceState({}, document.title);
       }
     }
@@ -221,35 +229,42 @@ function ServicesSection() {
     sectionsRef.current[index].scrollIntoView({ behavior: "smooth" });
   };
 
+  const handleVipCardClick = (serviceName) => {
+    const element = vipSectionsRef.current[serviceName];
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   const vipServices = [ 
     { 
       title: 'تأجير معدات تصوير',
       description: 'نوفر أحدث معدات التصوير الاحترافية بما في ذلك الكاميرات، العدسات، والملحقات لتلبية احتياجات مشاريعك الإعلامية بأعلى جودة.',
-      imagePath: '/images/camera-rental.jpg',
+      imagePath: '/images/vipServices/photography-enthusiasts.svg',
       icon: <VideocamIcon fontSize="large" />
     },
     { 
       title: 'تأجير شاشات LED',
       description: 'شاشات LED عالية الدقة بمختلف الأحجام والمواصفات، مثالية للمؤتمرات والفعاليات والعروض الخارجية والداخلية.',
-      imagePath: '/images/led-screens.jpg',
+      imagePath: '/images/vipServices/monitor.svg',
       icon: <TvIcon fontSize="large" />
     },
     { 
       title: 'تأجير نظام إضاءة + نظام صوت',
       description: 'أنظمة إضاءة وصوت متكاملة عالية الجودة لتغطية جميع أنواع الفعاليات والمناسبات مع دعم فني متخصص.',
-      imagePath: '/images/sound-light.jpg',
+      imagePath: '/images/vipServices/sound.svg',
       icon: <SpeakerIcon fontSize="large" />
     },
     { 
       title: 'الترجمة الفورية',
       description: 'خدمات ترجمة فورية احترافية مع مترجمين متخصصين وأحدث أنظمة الترجمة للمؤتمرات والفعاليات متعددة اللغات.',
-      imagePath: '/images/translation.jpg',
+      imagePath: '/images/vipServices/global-language-translate.svg',
       icon: <TranslateIcon fontSize="large" />
     },
     { 
       title: 'مطبوعات وهدايا',
       description: 'تصميم وإنتاج مطبوعات وهدايا دعائية مبتكرة تعزز هوية علامتك التجارية وتترك انطباعاً دائماً.',
-      imagePath: '/images/prints-gifts.jpg',
+      imagePath: '/images/vipServices/businessman-is-distributing-bonus-among-employees.svg',
       icon: <CardGiftcardIcon fontSize="large" />
     },
   ];
@@ -287,41 +302,70 @@ function ServicesSection() {
       </Typography>
 
       {/* Replace slider implementation with Swiper */}
-      <Box sx={{ mb: 8 }}>
+      <Box sx={{ 
+        mb: 8, 
+        mx: 'auto',
+        maxWidth: '100%',
+        overflow: 'hidden',
+        px: { xs: 2, md: 4 }
+      }}>
         <Swiper
           modules={[Autoplay, EffectFade]}
-          spaceBetween={2} // Reduced from 5
-          slidesPerView={2}
+          spaceBetween={16}
+          slidesPerView="auto"
           centeredSlides={false}
           autoplay={{
-            delay: 100, // Increased from 2000
+            delay: 3000,
             disableOnInteraction: false,
             pauseOnMouseEnter: true,
-            waitForTransition: true // Add this
           }}
-          speed={1500} // Increased from 1000
+          speed={800}
           loop={true}
-          breakpoints={{
-            480: { slidesPerView: 2, spaceBetween: 2 }, // Reduced from 10
-            768: { slidesPerView: 4, spaceBetween: 2 }, // Increased slidesPerView
-            1024: { slidesPerView: 5, spaceBetween: 2 }, // Increased slidesPerView
-            1280: { slidesPerView: 6, spaceBetween: 2 }, // Increased slidesPerView
+          style={{ 
+            padding: '20px 0',
           }}
-          style={{ padding: '0' }} // Removed padding
-          css={{
-            '.swiper-slide': {
-              transition: 'all 0.4s ease-out'
+          breakpoints={{
+            320: {
+              slidesPerView: 1.2,
+              spaceBetween: 12
+            },
+            480: {
+              slidesPerView: 2.2,
+              spaceBetween: 16
+            },
+            768: {
+              slidesPerView: 3.2,
+              spaceBetween: 16
+            },
+            1024: {
+              slidesPerView: 4.2,
+              spaceBetween: 20
+            },
+            1280: {
+              slidesPerView: 4.5,
+              spaceBetween: 24
             }
           }}
         >
           {services.map((service, index) => (
-            <SwiperSlide key={index}>
-              <ServiceCardContent
-                icon={service.icon}
-                title={service.title}
-                description={service.description}
-                onClick={() => handleCardClick(index)}
-              />
+            <SwiperSlide 
+              key={index}
+              style={{
+                width: 'auto',
+                height: 'auto'
+              }}
+            >
+              <Box sx={{ 
+                width: '280px',
+                height: '100%',
+              }}>
+                <ServiceCardContent
+                  icon={service.icon}
+                  title={service.title}
+                  description={service.description}
+                  onClick={() => handleCardClick(index)}
+                />
+              </Box>
             </SwiperSlide>
           ))}
         </Swiper>
@@ -546,7 +590,9 @@ function ServicesSection() {
                     transition={{ type: "spring", stiffness: 300 }}
                   >
                     <Card
+                      onClick={() => handleVipCardClick(service.title)}
                       sx={{
+                        cursor: 'pointer',  // Add this
                         p: 3,
                         height: '100%',
                         background: 'rgba(255,255,255,0.9)',
@@ -680,8 +726,14 @@ function ServicesSection() {
       {vipServices.map((service, index) => (
         <Box
           key={index}
+          ref={(el) => (vipSectionsRef.current[service.title] = el)}
           sx={{
-            width: "100%",
+            width: '100vw', // Changed from 100%
+            position: 'relative',
+            left: '50%',
+            right: '50%',
+            marginLeft: '-50vw',
+            marginRight: '-50vw',
             padding: { xs: "40px 0", md: "60px 0" },
             backgroundColor: index % 2 === 0 ? "#f5f5f5" : "#fff",
             display: "flex",
@@ -738,28 +790,25 @@ function ServicesSection() {
                 </Typography>
               </Box>
 
-              <Box sx={{
-                order: { xs: 2, md: index % 2 === 0 ? 1 : 2 },
-                flex: 1,
-                width: "100%",
-                height: { xs: "300px", md: "450px" },
-                position: "relative",
-                borderRadius: "12px",
-                overflow: "hidden",
-                boxShadow: "0 8px 20px rgba(0, 0, 0, 0.1)",
-              }}>
-                <Box
-                  component="img"
-                  src={service.imagePath}
-                  alt={service.title}
-                  sx={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    objectPosition: "center",
-                  }}
-                />
-              </Box>
+              {/* SVG Image */}
+              <Box
+                component="img"
+                src={service.imagePath}
+                alt={service.title}
+                sx={{
+                  order: { xs: 2, md: index % 2 === 0 ? 1 : 2 },
+                  flex: 1,
+                  width: { xs: "100%", md: "400px" },
+                  height: "auto",
+                  maxWidth: "100%",
+                  objectFit: "contain",
+                  filter: "drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.1))",
+                  transition: "transform 0.3s ease",
+                  "&:hover": {
+                    transform: "scale(1.05)"
+                  }
+                }}
+              />
             </Box>
           </Box>
         </Box>

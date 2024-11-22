@@ -1,11 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Box, Typography, Grid, IconButton, Container, Divider, TextField, Button, useTheme, Alert, Snackbar } from '@mui/material';
-import { Facebook, Twitter, Instagram, LinkedIn, YouTube, Phone, Email, LocationOn, Send } from '@mui/icons-material';
+import { Facebook, Instagram, LinkedIn, YouTube, Phone, Email, LocationOn, Send } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 import theme from '../theme';
 import { db } from '../firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
 import { Link, useNavigate } from 'react-router-dom';
+
+// Add custom X (Twitter) icon component
+const XIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M14.977 13.334L22.499 4H20.778L14.361 11.947L9.23199 4H3.50099L11.238 16.1L3.50099 25.68H5.22199L11.854 17.487L17.155 25.68H22.886L14.977 13.334ZM12.617 16.047L11.584 14.525L5.92699 5.927H8.44199L12.892 12.689L13.925 14.211L19.792 23.12H17.277L12.617 16.047Z"/>
+  </svg>
+);
 
 const MainFooter = () => {
   const particlesRef = useRef(null);
@@ -25,7 +32,7 @@ const MainFooter = () => {
         email,
         createdAt: new Date().toISOString(),
       });
-      
+
       setNotification({
         open: true,
         message: 'تم الاشتراك بنجاح!',
@@ -78,10 +85,10 @@ const MainFooter = () => {
         ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
         ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
         ctx.fill();
-        
+
         particle.x += particle.speedX;
         particle.y += particle.speedY;
-        
+
         if (particle.x < 0 || particle.x > canvas.width) particle.speedX *= -1;
         if (particle.y < 0 || particle.y > canvas.height) particle.speedY *= -1;
       });
@@ -141,7 +148,7 @@ const MainFooter = () => {
 
   const socialIcons = [
     { icon: <Facebook />, link: 'https://www.facebook.com/prod.promomedia?mibextid=ZbWKwL', color: '#1877f2' },
-    { icon: <Twitter />, link: 'https://x.com/prod_promomedia?t=gfdPOnroWKVI9xgK7gGRTA&s=09', color: '#1da1f2' },
+    { icon: <XIcon />, link: 'https://x.com/prod_promomedia?t=gfdPOnroWKVI9xgK7gGRTA&s=09', color: '#000000' },
     { icon: <Instagram />, link: 'https://www.instagram.com/promomedia__/profilecard/?igsh=MXZnb2FsaW05dXY3cA==', color: '#e4405f' },
   ];
 
@@ -160,6 +167,10 @@ const MainFooter = () => {
 
   const handleServiceClick = (index) => {
     navigate('/', { state: { scrollToService: index } });
+  };
+
+  const handleVipServiceClick = (serviceName) => {
+    navigate('/', { state: { scrollToVipService: serviceName } });
   };
 
   return (
@@ -208,8 +219,8 @@ const MainFooter = () => {
                 </Typography>
               </Grid>
               <Grid item xs={12} md={6}>
-                <Box 
-                  component="form" 
+                <Box
+                  component="form"
                   onSubmit={handleNewsletterSubmit}
                   sx={{ display: 'flex', gap: 1 }}
                 >
@@ -277,8 +288,8 @@ const MainFooter = () => {
           onClose={handleCloseNotification}
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         >
-          <Alert 
-            onClose={handleCloseNotification} 
+          <Alert
+            onClose={handleCloseNotification}
             severity={notification.type}
             sx={{ width: '100%' }}
           >
@@ -354,8 +365,8 @@ const MainFooter = () => {
                     الخدمات الرئيسية
                   </Typography>
                   {mainServices.map((service, index) => (
-                    <Typography 
-                      key={index} 
+                    <Typography
+                      key={index}
                       sx={menuItemStyle}
                       onClick={() => handleServiceClick(service.index)}
                     >
@@ -368,7 +379,8 @@ const MainFooter = () => {
               {/* Rest of the sections... */}
               <Grid item xs={12} sm={6} md={4} sx={{ textAlign: 'right' }}>
                 <FloatingCard>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: 3, position: 'relative',
+                  <Typography variant="h6" sx={{
+                    fontWeight: 'bold', marginBottom: 3, position: 'relative',
                     '&::after': {
                       content: '""',
                       position: 'absolute',
@@ -381,9 +393,9 @@ const MainFooter = () => {
                   }}>
                     عن برومو
                   </Typography>
-                  <Typography 
-                    component={Link} 
-                    to="/about" 
+                  <Typography
+                    component={Link}
+                    to="/about"
                     sx={{
                       ...menuItemStyle,
                       textDecoration: 'none',
@@ -392,9 +404,9 @@ const MainFooter = () => {
                   >
                     عندما بدأنا
                   </Typography>
-                  <Typography 
-                    component={Link} 
-                    to="/contact" 
+                  <Typography
+                    component={Link}
+                    to="/contact"
                     sx={{
                       ...menuItemStyle,
                       textDecoration: 'none',
@@ -403,9 +415,9 @@ const MainFooter = () => {
                   >
                     تواصل معنا
                   </Typography>
-                  <Typography 
-                    component={Link} 
-                    to="/blog" 
+                  <Typography
+                    component={Link}
+                    to="/blog"
                     sx={{
                       ...menuItemStyle,
                       textDecoration: 'none',
@@ -419,7 +431,8 @@ const MainFooter = () => {
 
               <Grid item xs={12} sm={6} md={4} sx={{ textAlign: 'right' }}>
                 <FloatingCard>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: 3, position: 'relative',
+                  <Typography variant="h6" sx={{
+                    fontWeight: 'bold', marginBottom: 3, position: 'relative',
                     '&::after': {
                       content: '""',
                       position: 'absolute',
@@ -430,11 +443,31 @@ const MainFooter = () => {
                       background: '#ffffff',
                     }
                   }}>
-                    تأثير بلس
+                    برومو بلس                  </Typography>
+                  <Typography 
+                    sx={menuItemStyle} 
+                    onClick={() => handleVipServiceClick('تأجير معدات تصوير')}
+                  >
+                    تأجير معدات تصوير
                   </Typography>
-                  {['الاستوديوهات', 'التسويق', 'كتابة المحتوى', 'الهوية والتصميم'].map((item, index) => (
-                    <Typography key={index} sx={menuItemStyle}>{item}</Typography>
-                  ))}
+                  <Typography 
+                    sx={menuItemStyle} 
+                    onClick={() => handleVipServiceClick('تأجير شاشات LED')}
+                  >
+                    تأجير شاشات LED
+                  </Typography>
+                  <Typography 
+                    sx={menuItemStyle} 
+                    onClick={() => handleVipServiceClick('تأجير نظام إضاءة وصوت')}
+                  >
+                    تأجير نظام إضاءة وصوت
+                  </Typography>
+                  <Typography 
+                    sx={menuItemStyle} 
+                    onClick={() => handleVipServiceClick('الترجمة الفورية')}
+                  >
+                    الترجمة الفورية
+                  </Typography>
                 </FloatingCard>
               </Grid>
             </Grid>

@@ -4,7 +4,6 @@ import { auth } from './firebaseConfig';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import './adminLogin.css';
-// Import your logo - adjust the path as needed
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
@@ -30,12 +29,14 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="admin-login-container" style={{ backgroundColor: theme.palette.background.default }}>
-      <div className="login-box" style={{ backgroundColor: theme.palette.background.paper }}>
-        <img src='/logoWide.png' alt="الشعار" className="login-logo" />
-        <h1 style={{ color: theme.palette.primary.main }}>تسجيل دخول المشرف</h1>
-        {error && <div className="error-message" style={{ color: theme.palette.error.main }}>{error}</div>}
-        <form onSubmit={handleLogin}>
+    <div className="admin-login-container">
+      <div className="login-box">
+        <div className="logo-container">
+          <img src='/logoWide.png' alt="الشعار" className="login-logo" />
+        </div>
+        <h1 className="login-title">تسجيل دخول المشرف</h1>
+        {error && <div className="error-message">{error}</div>}
+        <form onSubmit={handleLogin} className="login-form">
           <div className="input-group">
             <input
               type="email"
@@ -43,27 +44,23 @@ const AdminLogin = () => {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="البريد الإلكتروني"
               required
-              style={{ fontFamily: theme.typography.fontFamily }}
+              className="login-input"
             />
           </div>
           <div className="input-group">
             <input
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)} // Fixed the password setter
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="كلمة المرور"
               required
-              style={{ fontFamily: theme.typography.fontFamily }}
+              className="login-input"
             />
           </div>
           <button 
             type="submit" 
             disabled={loading}
-            style={{ 
-              backgroundColor: theme.palette.primary.main,
-              color: '#fff',
-              fontFamily: theme.typography.fontFamily 
-            }}
+            className="login-button"
           >
             {loading ? 'جاري تسجيل الدخول...' : 'تسجيل الدخول'}
           </button>
