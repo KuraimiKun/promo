@@ -1,12 +1,10 @@
 import React from 'react';
-import { Container, Typography, Box, Grid, Divider, Breadcrumbs, Link } from '@mui/material';
+import { Container, Typography, Box, Grid, Divider } from '@mui/material';
 import { motion } from 'framer-motion';
-import { Home as HomeIcon, Person } from '@mui/icons-material';
-import { Link as RouterLink } from 'react-router-dom';
 
 const About = () => {
   return (
-    <>
+    <Box sx={{ overflowX: 'hidden' }}> {/* Add this wrapper */}
       <Box
         component={motion.div}
         initial={{ opacity: 0 }}
@@ -125,67 +123,11 @@ const About = () => {
         </Container>
       </Box>
 
-      <Box 
-        component={motion.div}
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.3 }}
-        sx={{ 
-          position: 'absolute',
-          top: '85vh',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 10,
-          width: '90%',
-          maxWidth: '1200px'
-        }}
-      >
-        <Box
-          sx={{
-            backgroundColor: 'rgba(255, 255, 255, 0.1)',
-            backdropFilter: 'blur(10px)',
-            borderRadius: '50px',
-            py: 2,
-            px: 4,
-          }}
-        >
-          <Breadcrumbs 
-            aria-label="breadcrumb" 
-            sx={{ 
-              '& .MuiBreadcrumbs-separator': {
-                mx: 1
-              }
-            }}
-          >
-            <Link
-              component={RouterLink}
-              to="/"
-              color="inherit"
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                textDecoration: 'none',
-                '&:hover': { color: 'primary.main' }
-              }}
-            >
-              <HomeIcon sx={{ mr: 0.5 }} fontSize="small" />
-              الرئيسية
-            </Link>
-            <Typography
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                color: 'text.primary'
-              }}
-            >
-              <Person sx={{ mr: 0.5 }} fontSize="small" />
-              من نحن
-            </Typography>
-          </Breadcrumbs>
-        </Box>
-      </Box>
-
-      <Box sx={{ backgroundColor: '#f8f9fa', py: 12 }}>
+      <Box sx={{ 
+        backgroundColor: '#f8f9fa', 
+        py: 12,
+        overflow: 'hidden' // Add this
+      }}>
         <Container maxWidth="lg">
           <Grid container spacing={6}>
             <Grid item xs={12} md={6}>
@@ -403,7 +345,7 @@ const About = () => {
           </Grid>
         </Container>
       </Box>
-    </>
+    </Box>
   );
 };
 

@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { Container, TextField, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Checkbox, Button, Typography, Box, Paper, Grid, Snackbar, Alert, CircularProgress, Fade, Grow } from '@mui/material';
+import { Container, TextField, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Checkbox, Button, Typography, Box, Paper, Grid, Snackbar, Alert, CircularProgress, Fade, Grow, Breadcrumbs, Link } from '@mui/material';
 import { collection, addDoc } from "firebase/firestore";
 import { db } from './firebaseConfig';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 import BusinessIcon from '@mui/icons-material/Business';
+import { Link as RouterLink } from 'react-router-dom';
+import HomeIcon from '@mui/icons-material/Home';
+import ContactsIcon from '@mui/icons-material/Contacts';
 
 const ContactForm = () => {
     const [formData, setFormData] = useState({
@@ -130,8 +133,87 @@ const ContactForm = () => {
         setSnackbar({ ...snackbar, open: false });
     };
 
+    const textFieldStyles = {
+        '& .MuiOutlinedInput-root': {
+            transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+            '&:hover': {
+                transform: 'translateY(-2px)',
+                boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+            }
+        },
+        '& .MuiInputLabel-root': {
+            right: 'inherit',
+            left: 'inherit',
+            transformOrigin: 'right'
+        },
+        '& .MuiOutlinedInput-notchedOutline': {
+            textAlign: 'right'
+        },
+        '& .MuiInputLabel-shrink': {
+            transform: 'translate(-14px, -9px) scale(0.75)'
+        }
+    };
+
     return (
         <Container maxWidth="md" sx={{ py: 4 }}>
+            {/* Add Breadcrumbs before the Welcome Message */}
+            <Breadcrumbs
+                aria-label="breadcrumb"
+                sx={{
+                    mb: 4,
+                    '& .MuiBreadcrumbs-separator': {
+                        mx: 1
+                    }
+                }}
+            >
+                <Link
+                    component={RouterLink}
+                    to="/"
+                    color="inherit"
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        textDecoration: 'none',
+                        '&:hover': { color: 'primary.main' }
+                    }}
+                >
+                    <HomeIcon sx={{ mr: 0.5 }} fontSize="small" />
+                    الرئيسية
+                </Link>
+                <Typography
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        color: 'text.primary'
+                    }}
+                >
+                    <ContactsIcon sx={{ mr: 0.5 }} fontSize="small" />
+                    تواصل معنا
+                </Typography>
+            </Breadcrumbs>
+
+            {/* Add Title Section */}
+            <Typography
+                variant="h3"
+                component="h1"
+                sx={{
+                    mb: 5,
+                    textAlign: 'right',
+                    fontWeight: 800,
+                    background: `linear-gradient(45deg, #be1e2f, #d13744)`,
+                    backgroundClip: 'text',
+                    textFillColor: 'transparent',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    lineHeight: 1.5,  // Add this
+                    paddingBottom: '0.2em',  // Add this
+                    display: 'inline-block',  // Add this
+                    width: '100%',  // Add this
+                }}
+            >
+                تواصل معنا
+            </Typography>
+
             {/* Welcome Message */}
             <Paper elevation={3} sx={{ p: 3, mb: 4, backgroundColor: '#f8f9fa' }}>
                 <Typography variant="h6" component="h1" gutterBottom align="right" color="primary">
@@ -168,18 +250,12 @@ const ContactForm = () => {
                                                 fullWidth
                                                 required
                                                 variant="outlined"
-                                                InputProps={{ sx: { direction: 'rtl' } }}
                                                 error={!!errors.name}
                                                 helperText={errors.name}
-                                                sx={{
-                                                    '& .MuiOutlinedInput-root': {
-                                                        transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
-                                                        '&:hover': {
-                                                            transform: 'translateY(-2px)',
-                                                            boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
-                                                        }
-                                                    }
+                                                InputLabelProps={{
+                                                    shrink: true
                                                 }}
+                                                sx={textFieldStyles}
                                             />
                                         </Fade>
                                     </Grid>
@@ -194,18 +270,12 @@ const ContactForm = () => {
                                                 fullWidth
                                                 required
                                                 variant="outlined"
-                                                InputProps={{ sx: { direction: 'rtl' } }}
                                                 error={!!errors.email}
                                                 helperText={errors.email}
-                                                sx={{
-                                                    '& .MuiOutlinedInput-root': {
-                                                        transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
-                                                        '&:hover': {
-                                                            transform: 'translateY(-2px)',
-                                                            boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
-                                                        }
-                                                    }
+                                                InputLabelProps={{
+                                                    shrink: true
                                                 }}
+                                                sx={textFieldStyles}
                                             />
                                         </Fade>
                                     </Grid>
@@ -220,18 +290,12 @@ const ContactForm = () => {
                                                 fullWidth
                                                 required
                                                 variant="outlined"
-                                                InputProps={{ sx: { direction: 'rtl' } }}
                                                 error={!!errors.phone}
                                                 helperText={errors.phone}
-                                                sx={{
-                                                    '& .MuiOutlinedInput-root': {
-                                                        transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
-                                                        '&:hover': {
-                                                            transform: 'translateY(-2px)',
-                                                            boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
-                                                        }
-                                                    }
+                                                InputLabelProps={{
+                                                    shrink: true
                                                 }}
+                                                sx={textFieldStyles}
                                             />
                                         </Fade>
                                     </Grid>
@@ -284,18 +348,12 @@ const ContactForm = () => {
                                                 fullWidth
                                                 required
                                                 variant="outlined"
-                                                InputProps={{ sx: { direction: 'rtl' } }}
                                                 error={!!errors.subject}
                                                 helperText={errors.subject}
-                                                sx={{
-                                                    '& .MuiOutlinedInput-root': {
-                                                        transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
-                                                        '&:hover': {
-                                                            transform: 'translateY(-2px)',
-                                                            boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
-                                                        }
-                                                    }
+                                                InputLabelProps={{
+                                                    shrink: true
                                                 }}
+                                                sx={textFieldStyles}
                                             />
                                         </Fade>
                                     </Grid>
@@ -311,18 +369,12 @@ const ContactForm = () => {
                                                 variant="outlined"
                                                 multiline
                                                 rows={4}
-                                                InputProps={{ sx: { direction: 'rtl' } }}
                                                 error={!!errors.request}
                                                 helperText={errors.request}
-                                                sx={{
-                                                    '& .MuiOutlinedInput-root': {
-                                                        transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
-                                                        '&:hover': {
-                                                            transform: 'translateY(-2px)',
-                                                            boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
-                                                        }
-                                                    }
+                                                InputLabelProps={{
+                                                    shrink: true
                                                 }}
+                                                sx={textFieldStyles}
                                             />
                                         </Fade>
                                     </Grid>
@@ -348,7 +400,7 @@ const ContactForm = () => {
                         <Button
                             type="submit"
                             variant="contained"
-                            color="primary"
+                            color="primary" // This will use theme.palette.primary.main
                             fullWidth
                             disabled={loading}
                             sx={{
@@ -357,8 +409,9 @@ const ContactForm = () => {
                                 py: 1.5,
                                 fontSize: '1.1rem',
                                 position: 'relative',
-                                transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+                                backgroundColor: '#be1e2f', // Using theme primary color
                                 '&:hover': {
+                                    backgroundColor: '#d13744', // Using theme secondary color
                                     transform: 'translateY(-2px)',
                                     boxShadow: '0 6px 12px rgba(0,0,0,0.2)'
                                 }
@@ -376,33 +429,44 @@ const ContactForm = () => {
 
             {/* Contact Information */}
             <Fade in={mounted} timeout={1200}>
-                <Paper elevation={3} sx={{ p: 4, mb: 4, backgroundColor: '#f8f9fa' }}>
-                    <Grid container spacing={3} justifyContent="center">
+                <Paper elevation={3} sx={{
+                    p: 4,
+                    mb: 4,
+                    backgroundColor: '#f8f9fa',
+                    '& .MuiTypography-root': {
+                        color: '#be1e2f',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 1 // Adds consistent spacing between text and icons
+                    }
+                }}>
+                    <Grid 
+                        container 
+                        spacing={3} 
+                        direction="column"
+                        alignItems="center"
+                        justifyContent="center"
+                    >
                         <Grid item xs={12}>
-                            <Typography variant="h6" align="center" color="primary" gutterBottom sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                تأثير للإنتاج الإعلامي
-                                <BusinessIcon sx={{ ml: 1, mr: 1 }} /> {/* Changed from mr to ml */}
+                            <Typography variant="h6" gutterBottom>
+                                <BusinessIcon />
+                                برومو للإنتاج الإعلامي
                             </Typography>
                         </Grid>
                         <Grid item xs={12}>
-                            <Typography variant="body1" align="center" gutterBottom sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Typography variant="body1" gutterBottom>
+                                <LocationOnIcon />
                                 المقر الرئيسي - الإدارة
-                                <LocationOnIcon sx={{ ml: 1, mr: 1 }} /> {/* Changed from mr to ml */}
                             </Typography>
-                            <Typography variant="body1" align="center">
-                                تقاطع طريق العروبة مع طريق الأمير تركي الأول
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <Typography variant="body1" align="center" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                966114833363
-                                <PhoneIcon sx={{ ml: 1, mr: 1 }} /> {/* Changed from mr to ml */}
+                            <Typography variant="body1" sx={{ justifyContent: 'center' }}>
+                                إسطنبول، تركيا
                             </Typography>
                         </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <Typography variant="body1" align="center" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                966114833363
-                                <PhoneIcon sx={{ ml: 1, mr: 1 }} /> {/* Changed from mr to ml */}
+                        <Grid item xs={12}>
+                            <Typography variant="body1">
+                                <PhoneIcon />
+                                905011000777+
                             </Typography>
                         </Grid>
                     </Grid>

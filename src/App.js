@@ -1,5 +1,5 @@
 // src/App.js
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import UpperFooter from './components/UpperFooter';
 import Header from './components/Header';
@@ -10,7 +10,7 @@ import ContactForm from './Contact';
 import SingleBlog from './SingleBlog';
 import AdminDashboard from './AdminDashboard';
 import AdminLogin from './adminLogin';
-import { useEffect } from 'react';
+import LoadingSpinner from './components/LoadingSpinner';
 
 // Add this new component
 const NotFound = () => {
@@ -45,6 +45,7 @@ function ScrollToTop() {
 // Create a wrapper component for the layout
 const Layout = ({ children }) => {
   const location = useLocation();
+  const [isLoading, setIsLoading] = useState(true);
   const isAdminRoute = location.pathname.includes('/admin-');
   const is404 = ![
     '/', '/about', '/blog', '/contact', 
@@ -56,11 +57,25 @@ const Layout = ({ children }) => {
 
   const showHeaderFooter = !isAdminRoute && !is404;
 
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 800); // Increased duration for better visibility
+
+    return () => clearTimeout(timer);
+  }, [location]);
+
   return (
     <div>
-      {/* {showHeaderFooter && <Header />} */}
-      {children}
-      {showHeaderFooter && <UpperFooter />}
+      {isLoading ? (
+        <LoadingSpinner />
+      ) : (
+        <>
+          {children}
+          {showHeaderFooter && <UpperFooter />}
+        </>
+      )}
     </div>
   );
 };

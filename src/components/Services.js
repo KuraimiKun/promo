@@ -1,12 +1,8 @@
 import { Box, Card, Typography } from "@mui/material";
 import { styled, keyframes } from "@mui/system";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState, useMemo } from "react";
 import { useLocation } from "react-router-dom";
-// Add Swiper imports
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, EffectFade } from 'swiper/modules'; // Add EffectFade
-import 'swiper/css';
-import 'swiper/css/effect-fade'; // Add this import
+import { AnimatePresence, motion } from 'framer-motion'; // Add AnimatePresence
 import MovieIcon from '@mui/icons-material/Movie';
 import TvIcon from '@mui/icons-material/Tv';
 import CampaignIcon from '@mui/icons-material/Campaign';
@@ -25,7 +21,6 @@ import VideocamIcon from '@mui/icons-material/Videocam';
 import SpeakerIcon from '@mui/icons-material/Speaker';
 import TranslateIcon from '@mui/icons-material/Translate';
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
-import { motion } from 'framer-motion';
 
 // Add these new animations
 const shimmer = keyframes`
@@ -60,56 +55,59 @@ const IconWrapper = styled(Box)(({ theme }) => ({
   background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.primary.light})`,
   color: "#fff",
   borderRadius: "50%",
-  width: 50, // Reduced from 60
-  height: 50, // Reduced from 60
+  width: 40, // Increased from 32
+  height: 40, // Increased from 32
   display: "flex",
   alignItems: "center",
   justifyContent: "center", 
-  fontSize: "22px", // Reduced from 26px
+  fontSize: "20px", // Increased from 16px
   margin: "0 auto",
-  boxShadow: "0 8px 20px rgba(98, 0, 238, 0.2)",
-  transition: "transform 0.3s ease",
+  boxShadow: "0 6px 15px rgba(98, 0, 238, 0.2)", // Enhanced shadow
+  transition: "transform 0.3s ease, box-shadow 0.3s ease",
   "&:hover": {
-    transform: "scale(1.1)"
+    transform: "scale(1.2)", // Enhanced hover effect
+    boxShadow: "0 8px 20px rgba(98, 0, 238, 0.3)" // Enhanced hover shadow
   }
 }));
 
 // Update ServiceCard to work better with Swiper
 const ServiceCard = styled(Card)(({ theme }) => ({
-  padding: theme.spacing(3),
+  padding: theme.spacing(2), // Increased padding
   textAlign: "center",
-  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-  borderRadius: "16px",
+  boxShadow: '0 4px 12px rgba(0,0,0,0.1)', // Enhanced shadow
+  borderRadius: "12px", // Increased border radius
   transition: "all 0.3s ease",
-  height: '320px', // Fixed height
+  height: '220px', // Adjusted height
   width: '100%',
   cursor: "pointer",
   display: "flex",
   flexDirection: "column",
   background: '#fff',
-  marginBottom: theme.spacing(1), // Add bottom margin
+  marginBottom: theme.spacing(1), // Adjusted margin
   "&:hover": {
-    transform: "translateY(-5px)",
-    boxShadow: '0 8px 24px rgba(0,0,0,0.15)'
+    transform: "translateY(-5px)", // Enhanced hover effect
+    boxShadow: '0 8px 24px rgba(0,0,0,0.15)' // Enhanced hover shadow
   }
 }));
 
 function ServiceCardContent({ icon, title, description, onClick }) {
   return (
     <ServiceCard onClick={onClick}>
-      <IconWrapper sx={{ mb: 2 }}>{icon}</IconWrapper>
+      <IconWrapper sx={{ mb: 2 }}>{icon}</IconWrapper> {/* Adjusted margin */}
       <Typography 
         variant="h6" 
         color="primary" 
         sx={{ 
           fontWeight: "bold", 
-          mb: 2,
-          fontSize: '1.1rem',
-          height: '44px',
+          mb: 1.5, // Adjusted margin
+          fontSize: '1rem', // Adjusted font size
+          height: 'auto', // Adjusted height to auto
           overflow: 'hidden',
           display: '-webkit-box',
           WebkitLineClamp: 2,
           WebkitBoxOrient: 'vertical',
+          textOverflow: 'ellipsis', // Added text overflow
+          whiteSpace: 'normal', // Adjusted white space
         }}
       >
         {title}
@@ -118,14 +116,14 @@ function ServiceCardContent({ icon, title, description, onClick }) {
         variant="body2" 
         color="text.secondary" 
         sx={{ 
-          fontSize: "0.9rem", 
-          lineHeight: 1.6,
+          fontSize: "0.85rem", // Adjusted font size
+          lineHeight: 1.5, // Adjusted line height
           flex: 1,
           overflow: 'hidden',
           display: '-webkit-box',
           WebkitLineClamp: 4,
           WebkitBoxOrient: 'vertical',
-          opacity: 0.8
+          opacity: 0.9 // Adjusted opacity
         }}
       >
         {description}
@@ -134,10 +132,90 @@ function ServiceCardContent({ icon, title, description, onClick }) {
   );
 }
 
+const fadeAnimation = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -20 }
+};
+
 function ServicesSection() {
   const location = useLocation();
   const sectionsRef = useRef([]);
   const vipSectionsRef = useRef({}); // Add this for VIP services
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  
+  // Move services array into useMemo
+  const services = useMemo(() => [
+    {
+      icon: <TvIcon fontSize="large" />,
+      title: "البرامج التلفزيونية",
+      description: "إنتاج وتطوير برامج تلفزيونية متنوعة تتناسب مع اهتمامات جمهورك وتعكس رسالة علامتك التجارية.",
+      imagePath: "/images/services/teleServices.jpg"
+    },
+    
+    {
+      icon: <MovieCreationIcon fontSize="large" />,
+      title: "الأفلام التعريفية والوثائقية",
+      description: "إنشاء أفلام تعريفية تعكس قصصك وأفلام وثائقية تسلط الضوء على الواقع بأسلوب مميز.",
+      imagePath: "/images/services/personal.jpg"
+    },
+    {
+      icon: <EventIcon fontSize="large" />,
+      title: "توثيق المؤتمرات والمناسبات",
+      description: "تقديم خدمات توثيق احترافية للمؤتمرات والمناسبات لضمان حفظ كل لحظة هامة وتفاصيل الحدث.",
+      imagePath: "/images/services/conference.jpg"
+    },
+    {
+      icon: <CampaignOutlinedIcon fontSize="large" />,
+      title: "إدارة الحملات الإعلامية",
+      description: "تنظيم وإدارة حملات إعلامية فعالة لتحقيق أهدافك الترويجية وزيادة تأثيرك في السوق.",
+      imagePath: "/images/services/ads.jpg"
+    },
+    {
+      icon: <CampaignIcon fontSize="large" />,
+      title: "الإعلانات التجارية",
+      description: "تصميم وإنتاج إعلانات تجارية مبتكرة تروج لمنتجاتك وخدماتك بشكل جذاب وفعال.",
+      imagePath: "/images/promoTeam.jpg"
+    },
+    {
+      icon: <BrushIcon fontSize="large" />,
+      title: "الهويات البصرية",
+      description: "تصميم هوية بصرية متكاملة تعكس روح علامتك التجارية وتعزز من تواجدك في السوق.",
+      imagePath: "/images/promoTeam.jpg"
+    },
+    {
+      icon: <AnimationIcon fontSize="large" />,
+      title: "المونتاج والموشن جرافيك والتصميم",
+      description: "تقديم خدمات مونتاج احترافية وتصميم موشن جرافيك تضيف لمسة إبداعية لمحتواك.",
+      imagePath: "/images/promoTeam.jpg"
+    },
+    {
+      icon: <DescriptionIcon fontSize="large" />,
+      title: "إعداد المحتوى وكتابة السيناريوهات",
+      description: "تطوير محتوى مكتوب وسيناريوهات مخصصة تدعم مشاريعك وتساهم في نجاحها.",
+      imagePath: "/images/promoTeam.jpg"
+    },
+    {
+      icon: <ShareIcon fontSize="large" />,
+      title: "إدارة مواقع التواصل الاجتماعي",
+      description: "إدارة وتطوير استراتيجيات مواقع التواصل الاجتماعي لتعزيز حضورك الرقمي والتفاعل مع جمهورك.",
+      imagePath: "/images/promoTeam.jpg"
+    },
+    {
+      icon: <WebIcon fontSize="large" />,
+      title: "تصميم المواقع الإلكترونية والتطبيقات",
+      description: "تصميم وتطوير مواقع إلكترونية وتطبيقات تفاعلية توفر تجربة مستخدم متميزة.",
+      imagePath: "/images/promoTeam.jpg"
+    },
+    
+    {
+      icon: <SearchIcon fontSize="large" />,
+      title: "تحسين محركات البحث (SEO)",
+      description: "تحسين ظهور موقعك في نتائج محركات البحث لزيادة الوصول إلى جمهورك المستهدف.",
+      imagePath: "/images/promoTeam.jpg"
+    },
+  ], []); // Empty dependency array since these values never change
 
   // Modify the useEffect to handle both main and VIP services
   useEffect(() => {
@@ -155,75 +233,6 @@ function ServicesSection() {
       }
     }
   }, [location]);
-
-  const services = [
-    {
-      icon: <TvIcon fontSize="large" />,
-      title: "البرامج التلفزيونية",
-      description: "إنتاج وتطوير برامج تلفزيونية متنوعة تتناسب مع اهتمامات جمهورك وتعكس رسالة علامتك التجارية.",
-      imagePath: "/images/image.png"
-    },
-    {
-      icon: <CampaignIcon fontSize="large" />,
-      title: "الإعلانات التجارية",
-      description: "تصميم وإنتاج إعلانات تجارية مبتكرة تروج لمنتجاتك وخدماتك بشكل جذاب وفعال.",
-      imagePath: "/images/image.png"
-    },
-    {
-      icon: <MovieCreationIcon fontSize="large" />,
-      title: "الأفلام التعريفية والوثائقية",
-      description: "إنشاء أفلام تعريفية تعكس قصصك وأفلام وثائقية تسلط الضوء على الواقع بأسلوب مميز.",
-      imagePath: "/images/image.png"
-    },
-    {
-      icon: <EventIcon fontSize="large" />,
-      title: "توثيق المؤتمرات والمناسبات",
-      description: "تقديم خدمات توثيق احترافية للمؤتمرات والمناسبات لضمان حفظ كل لحظة هامة وتفاصيل الحدث.",
-      imagePath: "/images/image.png"
-    },
-    {
-      icon: <BrushIcon fontSize="large" />,
-      title: "الهويات البصرية",
-      description: "تصميم هوية بصرية متكاملة تعكس روح علامتك التجارية وتعزز من تواجدك في السوق.",
-      imagePath: "/images/branding.jpg"
-    },
-    {
-      icon: <AnimationIcon fontSize="large" />,
-      title: "المونتاج والموشن جرافيك والتصميم",
-      description: "تقديم خدمات مونتاج احترافية وتصميم موشن جرافيك تضيف لمسة إبداعية لمحتواك.",
-      imagePath: "/images/motion.jpg"
-    },
-    {
-      icon: <DescriptionIcon fontSize="large" />,
-      title: "إعداد المحتوى وكتابة السيناريوهات",
-      description: "تطوير محتوى مكتوب وسيناريوهات مخصصة تدعم مشاريعك وتساهم في نجاحها.",
-      imagePath: "/images/content.jpg"
-    },
-    {
-      icon: <ShareIcon fontSize="large" />,
-      title: "إدارة مواقع التواصل الاجتماعي",
-      description: "إدارة وتطوير استراتيجيات مواقع التواصل الاجتماعي لتعزيز حضورك الرقمي والتفاعل مع جمهورك.",
-      imagePath: "/images/socialmedia.jpg"
-    },
-    {
-      icon: <WebIcon fontSize="large" />,
-      title: "تصميم المواقع الإلكترونية والتطبيقات",
-      description: "تصميم وتطوير مواقع إلكترونية وتطبيقات تفاعلية توفر تجربة مستخدم متميزة.",
-      imagePath: "/images/webdesign.jpg"
-    },
-    {
-      icon: <CampaignOutlinedIcon fontSize="large" />,
-      title: "إدارة الحملات الإعلامية",
-      description: "تنظيم وإدارة حملات إعلامية فعالة لتحقيق أهدافك الترويجية وزيادة تأثيرك في السوق.",
-      imagePath: "/images/campaigns.jpg"
-    },
-    {
-      icon: <SearchIcon fontSize="large" />,
-      title: "تحسين محركات البحث (SEO)",
-      description: "تحسين ظهور موقعك في نتائج محركات البحث لزيادة الوصول إلى جمهورك المستهدف.",
-      imagePath: "/images/seo.jpg"
-    },
-  ];
 
   const handleCardClick = (index) => {
     sectionsRef.current[index].scrollIntoView({ behavior: "smooth" });
@@ -290,6 +299,108 @@ function ServicesSection() {
     }
   };
 
+  const serviceGroups = useMemo(() => {
+    const groups = [];
+    const isMobile = window.innerWidth < 600; // You can adjust this breakpoint
+    const itemsPerGroup = isMobile ? 2 : 5;
+    
+    for (let i = 0; i < services.length; i += itemsPerGroup) {
+      groups.push(services.slice(i, i + itemsPerGroup));
+    }
+    
+    // For desktop: Ensure the last group has at least 2 elements
+    if (!isMobile && groups.length > 1 && groups[groups.length - 1].length === 1) {
+      const lastGroup = groups.pop();
+      groups[groups.length - 1].push(...lastGroup);
+    }
+    
+    return groups;
+  }, [services]);
+
+  useEffect(() => {
+    if (!isHovered) {
+      const timer = setInterval(() => {
+        setCurrentIndex((prev) => (prev + 1) % serviceGroups.length);
+      }, 4000); // Increased time to 4 seconds for better readability on mobile
+  
+      return () => clearInterval(timer);
+    }
+  }, [serviceGroups.length, isHovered]);
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+  
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
+
+  const renderServiceCards = () => (
+    <Box
+      sx={{
+        display: 'flex',
+        gap: 2,
+        justifyContent: 'center',
+        mb: 8,
+        px: { xs: 2, md: 4 },
+        minHeight: '220px', // Set fixed height to prevent layout shift
+      }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentIndex}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          variants={{
+            initial: { opacity: 0 },
+            animate: {
+              opacity: 1,
+              transition: {
+                when: "beforeChildren",
+                staggerChildren: 0.1,
+              },
+            },
+            exit: {
+              opacity: 0,
+              transition: {
+                when: "afterChildren",
+                staggerChildren: 0.1,
+              },
+            },
+          }}
+          style={{
+            display: 'flex',
+            gap: '16px',
+            width: '100%',
+            justifyContent: 'center',
+          }}
+        >
+          {serviceGroups[currentIndex].map((service, index) => (
+            <motion.div
+              key={service.title}
+              variants={fadeAnimation}
+              style={{
+                width: window.innerWidth < 600 ? 'calc(50% - 8px)' : '160px',
+                maxWidth: window.innerWidth < 600 ? '160px' : '160px',
+                flex: 'none',
+              }}
+            >
+              <ServiceCardContent
+                icon={service.icon}
+                title={service.title}
+                description={service.description}
+                onClick={() => handleCardClick(currentIndex * (window.innerWidth < 600 ? 2 : 5) + index)}
+              />
+            </motion.div>
+          ))}
+        </motion.div>
+      </AnimatePresence>
+    </Box>
+  );
+
   return (
     <Box sx={{ padding: { xs: "30px 0", md: "50px 20px" }, direction: "rtl" }}>
       <Typography variant="h4" color="primary" sx={{ 
@@ -301,77 +412,7 @@ function ServicesSection() {
         خدماتنا الرئيسية
       </Typography>
 
-      {/* Replace slider implementation with Swiper */}
-      <Box sx={{ 
-        mb: 8, 
-        mx: 'auto',
-        maxWidth: '100%',
-        overflow: 'hidden',
-        px: { xs: 2, md: 4 }
-      }}>
-        <Swiper
-          modules={[Autoplay, EffectFade]}
-          spaceBetween={16}
-          slidesPerView="auto"
-          centeredSlides={false}
-          autoplay={{
-            delay: 3000,
-            disableOnInteraction: false,
-            pauseOnMouseEnter: true,
-          }}
-          speed={800}
-          loop={true}
-          style={{ 
-            padding: '20px 0',
-          }}
-          breakpoints={{
-            320: {
-              slidesPerView: 1.2,
-              spaceBetween: 12
-            },
-            480: {
-              slidesPerView: 2.2,
-              spaceBetween: 16
-            },
-            768: {
-              slidesPerView: 3.2,
-              spaceBetween: 16
-            },
-            1024: {
-              slidesPerView: 4.2,
-              spaceBetween: 20
-            },
-            1280: {
-              slidesPerView: 4.5,
-              spaceBetween: 24
-            }
-          }}
-        >
-          {services.map((service, index) => (
-            <SwiperSlide 
-              key={index}
-              style={{
-                width: 'auto',
-                height: 'auto'
-              }}
-            >
-              <Box sx={{ 
-                width: '280px',
-                height: '100%',
-              }}>
-                <ServiceCardContent
-                  icon={service.icon}
-                  title={service.title}
-                  description={service.description}
-                  onClick={() => handleCardClick(index)}
-                />
-              </Box>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </Box>
-
-   
+      {/* {renderServiceCards()} */}
 
       {/* Detailed Sections */}
       <Box sx={{ 
@@ -424,12 +465,57 @@ function ServicesSection() {
                   flexDirection: "column",
                   alignItems: "center"
                 }}>
+                  <Avatar
+                    sx={{
+                      width: 80,
+                      height: 80,
+                      background: theme => `linear-gradient(135deg, 
+                        ${theme.palette.primary.main}, 
+                        ${theme.palette.secondary.main}
+                      )`,
+                      boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+                      margin: '0 auto 20px auto',
+                      transition: 'transform 0.6s ease',
+                      '& svg': {
+                        fontSize: '2rem',
+                        transition: 'transform 0.3s ease',
+                      },
+                      '&:hover': {
+                        transform: 'rotateY(180deg)',
+                        '& svg': {
+                          transform: 'scale(1.2)',
+                        },
+                      },
+                    }}
+                  >
+                    {service.icon}
+                  </Avatar>
                   <Typography variant="h5" color="primary" sx={{ 
                     fontWeight: "bold",
                     mb: { xs: 2, md: 3 },
                     fontSize: { xs: "1.75rem", md: "2rem" },
                     textAlign: "center",
-                    width: "100%"
+                    width: "100%",
+                    position: 'relative',
+                    '&::after': {
+                      content: '""',
+                      position: 'absolute',
+                      bottom: -8,
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      width: '40%',
+                      height: 3,
+                      background: theme => 
+                        `linear-gradient(90deg, 
+                          ${theme.palette.primary.main}, 
+                          ${theme.palette.secondary.main}
+                        )`,
+                      borderRadius: '2px',
+                      transition: 'width 0.3s ease',
+                    },
+                    '&:hover::after': {
+                      width: '60%',
+                    },
                   }}>
                     {service.title}
                   </Typography>
@@ -767,9 +853,31 @@ function ServicesSection() {
                 flexDirection: "column",
                 alignItems: "center"
               }}>
-                <IconWrapper sx={{ mb: 3 }}>
+                <Avatar
+                  sx={{
+                    width: 80,
+                    height: 80,
+                    background: theme => `linear-gradient(135deg, 
+                      ${theme.palette.primary.main}, 
+                      ${theme.palette.secondary.main}
+                    )`,
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+                    margin: '0 auto 20px auto',
+                    transition: 'transform 0.6s ease',
+                    '& svg': {
+                      fontSize: '2rem',
+                      transition: 'transform 0.3s ease',
+                    },
+                    '&:hover': {
+                      transform: 'rotateY(180deg)',
+                      '& svg': {
+                        transform: 'scale(1.2)',
+                      },
+                    },
+                  }}
+                >
                   {service.icon}
-                </IconWrapper>
+                </Avatar>
                 <Typography variant="h5" color="primary" sx={{ 
                   fontWeight: "bold",
                   mb: { xs: 2, md: 3 },

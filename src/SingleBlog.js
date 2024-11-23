@@ -165,7 +165,7 @@ const SingleBlog = () => {
                     component="span"
                     sx={{
                       display: 'inline-block',
-                      background: 'linear-gradient(45deg, #1a237e, #0277bd)',
+                      background: `linear-gradient(45deg, #be1e2f, #d13744)`,
                       color: 'white',
                       px: 3,
                       py: 0.8,
@@ -173,7 +173,7 @@ const SingleBlog = () => {
                       mb: 3,
                       fontSize: '0.95rem',
                       fontWeight: 600,
-                      boxShadow: '0 4px 15px rgba(2,119,189,0.2)',
+                      boxShadow: '0 4px 15px rgba(190,30,47,0.2)',
                       backdropFilter: 'blur(8px)',
                     }}
                   >
@@ -189,11 +189,11 @@ const SingleBlog = () => {
                   fontSize: { xs: '2.5rem', md: '3.5rem' },
                   lineHeight: 1.2,
                   mb: 3,
-                  background: 'linear-gradient(45deg, #1a237e, #0277bd)',
+                  background: `linear-gradient(45deg, #be1e2f, #d13744)`,
                   backgroundClip: 'text',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
-                  textShadow: '0 10px 30px rgba(2,119,189,0.15)',
+                  textShadow: '0 10px 30px rgba(190,30,47,0.15)',
                 }}
               >
                 {post.title}
@@ -230,7 +230,7 @@ const SingleBlog = () => {
                 content: '""',
                 position: 'absolute',
                 inset: '-10px',
-                background: 'linear-gradient(45deg, rgba(26,35,126,0.1), rgba(2,119,189,0.1))',
+                background: `linear-gradient(45deg, rgba(190,30,47,0.1), rgba(209,55,68,0.1))`,
                 borderRadius: '32px',
                 zIndex: -1,
                 filter: 'blur(20px)'
@@ -273,12 +273,12 @@ const SingleBlog = () => {
                 position: 'relative',
                 zIndex: 1,
                 '&::before': {
-                  content: '"""',
+                  content: '""',
                   position: 'absolute',
                   top: -60,
                   right: -80,
                   fontSize: '200px',
-                  background: 'linear-gradient(45deg, rgba(26,35,126,0.05), rgba(2,119,189,0.05))',
+                  background: 'linear-gradient(45deg, rgba(190,30,47,0.05), rgba(209,55,68,0.05))',
                   backgroundClip: 'text',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
